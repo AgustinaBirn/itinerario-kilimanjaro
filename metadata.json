@@ -1,0 +1,8 @@
+{
+  "name": "Birn Experience - Trekking Kilimanjaro & Safari Tanzania 2027",
+  "description": "Landing page oficial de expedición de 11 días al Kilimanjaro (5.895 m) por la Ruta Marangu y Safari en Tarangire y Cráter Ngorongoro con Birn Experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

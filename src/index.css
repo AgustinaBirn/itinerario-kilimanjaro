@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@layer theme {
+  :root {
+    --brand-dark: #022c3b;
+    --brand-dark-surface: #033a4d;
+    --brand-dark-card: #022c3bbf;
+    --brand-orange: #d45e33;
+    --brand-teal: #009ea4;
+    --brand-soft: #95cecf;
+    --brand-peach: #e4a381;
+    --text-main: #f5f0e8;
+    --font-outfit: "Outfit", sans-serif;
+    --font-cormorant: "Cormorant Garamond", Georgia, serif;
+  }
+}
+
+body {
+  background-color: var(--brand-dark);
+  color: var(--text-main);
+  font-family: var(--font-outfit);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-title {
+  font-family: var(--font-outfit);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+}
+
+.font-body {
+  font-family: var(--font-outfit);
+  font-weight: 400;
+}
+
+.font-accent,
+.font-serif {
+  font-family: var(--font-cormorant);
+}
+
+.micro-label {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brand-orange);
+  font-size: 0.725rem;
+  font-weight: 700;
+}
+
+.micro-label-teal {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brand-teal);
+  font-size: 0.725rem;
+  font-weight: 700;
+}
+
+.btn-editorial {
+  background: var(--brand-orange);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-radius: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+}
+
+.btn-editorial:hover {
+  background: #b34d2a;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(212, 94, 51, 0.4);
+}
+
+.asterisk-text {
+  font-style: italic;
+}
+
+/* Custom scrollbar for preview */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #01141c;
+}
+::-webkit-scrollbar-thumb {
+  background: #024357;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d45e33;
+}
