@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import L from 'leaflet';
 import {
   Compass,
   Calendar,
@@ -29,7 +30,9 @@ import {
   Menu as MenuIcon,
   Tent,
   Utensils,
-  Play
+  Play,
+  Layers,
+  Trees
 } from 'lucide-react';
 
 // WhatsApp SVG Icon matching reference
@@ -54,6 +57,7 @@ const P = {
     email: "birnexperience@gmail.com",
     website: "https://birnexperience.com/",
     instagram: "https://www.instagram.com/birnexperience",
+    instagramHighlight: "https://www.instagram.com/stories/highlights/18250535248101437/",
     facebook: "https://www.facebook.com/birnexperience/"
   },
   stats: [
@@ -67,17 +71,17 @@ const P = {
       day: 1,
       date: "05 DE FEBRERO",
       title: "Llegada al Aeropuerto de Kilimanjaro (JRO) → Moshi",
-      subtitle: "Bienvenida en Tanzania, traslado privado y briefing de expedición",
+      subtitle: "Bienvenida en Moshi, traslado y briefing",
       stage: "llegada",
       stageLabel: "Llegada & Encuentro",
       location: "Aeropuerto JRO → Hotel en Moshi / Arusha",
       meal: "Cena de bienvenida",
       accommodation: "Hotel Confortable en Moshi ***",
-      images: ["/assets/images/hero_kilimanjaro.jpg"],
+      images: ["/assets/images/aeropuerto.webp"],
       activities: [
         "Recepción personalizada del grupo en el Aeropuerto Internacional de Kilimanjaro (JRO).",
         "Traslado en vehículo privado hacia el hotel base en Moshi (45 min de trayecto).",
-        "Revisión minuciosa de equipo individual, aclimatación y charla técnica general con Ricardo Birn."
+        "Revisión minuciosa de equipo individual, aclimatación y charla técnica general con el guía de Birn Experience y el equipo de montaña."
       ],
       metrics: { distance: "Traslado en vehículo", ascent: "—", descent: "—", duration: "1 h" }
     },
@@ -85,13 +89,13 @@ const P = {
       day: 2,
       date: "06 DE FEBRERO",
       title: "Puerta de Marangu (1.870 m) → Mandara Hut (2.720 m)",
-      subtitle: "Ingreso al Parque Nacional y caminata por selva tropical pluvial",
+      subtitle: "Ingreso al Parque y marcha en selva tropical",
       stage: "marangu",
       stageLabel: "Selva & Inicio Trekking",
       location: "Marangu Gate · Selva Tropical · Mandara Hut",
       meal: "Pensión completa (Desayuno, picnic y cena)",
       accommodation: "Mandara Hut (Refugio de madera)",
-      images: ["/assets/images/horombo_hut.jpg"],
+      images: ["/assets/images/inicio-trekking.webp"],
       activities: [
         "Traslado de Moshi a Marangu Gate (1 h) y registro oficial ante las autoridades del Parque Nacional.",
         "Inicio del trekking ascendiendo por un frondoso bosque húmedo tropical habitado por monos colobos y aves exóticas.",
@@ -103,13 +107,13 @@ const P = {
       day: 3,
       date: "07 DE FEBRERO",
       title: "Mandara Hut (2.720 m) → Horombo Hut (3.720 m)",
-      subtitle: "Ascenso por el páramo alpino con vistas a los picos Mawenzi y Kibo",
+      subtitle: "Páramo alpino con vistas a Mawenzi y Kibo",
       stage: "marangu",
       stageLabel: "Páramo & Horombo",
       location: "Bosque de brezos · Páramo · Horombo Hut",
       meal: "Pensión completa en refugio",
       accommodation: "Horombo Hut (Refugio alpino)",
-      images: ["/assets/images/horombo_hut.jpg"],
+      images: ["/assets/images/horombo-hut.webp"],
       activities: [
         "Dejamos atrás la selva pluvial para ingresar en el páramo de arbustos gigantes y senecios kilimanjari.",
         "Apertura del horizonte con las primeras vistas espectaculares del pico Kibo y las agujas del Mawenzi.",
@@ -121,13 +125,13 @@ const P = {
       day: 4,
       date: "08 DE FEBRERO",
       title: "Jornada de Aclimatación en Horombo Hut (3.720 m) → Zebra Rocks",
-      subtitle: "Estrategia de 'subir alto y dormir bajo' para garantizar éxito en cumbre",
+      subtitle: "Aclimatación activa en Zebra Rocks (4.020 m)",
       stage: "marangu",
       stageLabel: "Aclimatación Clave",
       location: "Horombo Hut · Zebra Rocks (4.020 m) · Horombo",
       meal: "Pensión completa en refugio",
       accommodation: "Horombo Hut",
-      images: ["/assets/images/uhuru_summit.jpg"],
+      images: ["/assets/images/aclimatacion.webp"],
       activities: [
         "Día estratégico fundamental de nuestra expedición para estimular la producción de glóbulos rojos.",
         "Caminata suave de aclimatación hasta las formaciones geológicas rayadas de Zebra Rocks (4.020 m).",
@@ -139,13 +143,13 @@ const P = {
       day: 5,
       date: "09 DE FEBRERO",
       title: "Horombo Hut (3.720 m) → Kibo Hut (4.703 m)",
-      subtitle: "Cruce del desierto lunar alpino 'The Saddle' hasta la base de cumbre",
+      subtitle: "Cruce del desierto alpino a Kibo Hut",
       stage: "marangu",
       stageLabel: "Desierto Alpino & Kibo",
       location: "The Saddle (Silla de montar) · Refugio Kibo",
       meal: "Pensión completa (cena temprana)",
       accommodation: "Kibo Hut (Refugio de piedra)",
-      images: ["/assets/images/uhuru_summit.jpg"],
+      images: ["/assets/images/dia-5.webp"],
       activities: [
         "Marcha a través del árido e imponente desierto volcánico entre los macizos de Kibo y Mawenzi.",
         "El paisaje se vuelve sobrio, mineral y silencioso mientras nos aproximamos a la base rocosa de Kibo Hut.",
@@ -157,13 +161,13 @@ const P = {
       day: 6,
       date: "10 DE FEBRERO",
       title: "Ataque a Cumbre: Kibo Hut → Uhuru Peak (5.895 m) → Horombo Hut",
-      subtitle: "Amanecer en el Techo de África y descenso seguro",
+      subtitle: "Amanecer en Uhuru Peak (5.895 m) y descenso",
       stage: "cumbre",
       stageLabel: "¡Cumbre de África!",
       location: "Gilman's Point (5.685 m) · Stella Point · Uhuru Peak (5.895 m)",
       meal: "Té y snacks en marcha · Almuerzo en Kibo · Cena en Horombo",
       accommodation: "Horombo Hut",
-      images: ["/assets/images/uhuru_summit.jpg"],
+      images: ["/assets/images/cima-kilimanjaro.webp"],
       activities: [
         "Salida a medianoche bajo un cielo estrellado a paso 'pole pole' subiendo la ladera de ceniza volcánica.",
         "Llegada a Gilman's Point (5.685 m) en el borde del cráter justo cuando el sol asoma sobre las nubes.",
@@ -176,13 +180,13 @@ const P = {
       day: 7,
       date: "11 DE FEBRERO",
       title: "Horombo Hut (3.720 m) → Puerta de Marangu → Moshi / Arusha",
-      subtitle: "Descenso final por el bosque pluvial, certificados de cumbre y descanso",
+      subtitle: "Descenso final, certificados y descanso",
       stage: "marangu",
       stageLabel: "Descenso & Celebración",
       location: "Horombo → Mandara → Marangu Gate → Moshi",
       meal: "Desayuno en montaña · Almuerzo de despedida · Cena en hotel",
       accommodation: "Hotel Confortable en Moshi / Arusha ***",
-      images: ["/assets/images/hero_kilimanjaro.jpg"],
+      images: ["/assets/images/grupo.webp"],
       activities: [
         "Última caminata en descenso cruzando Mandara Hut hasta la Puerta de Marangu (1.870 m).",
         "Entrega de los certificados oficiales de cumbre emitidos por el Parque Nacional Kilimanjaro.",
@@ -194,13 +198,13 @@ const P = {
       day: 8,
       date: "12 DE FEBRERO",
       title: "Safari en el Parque Nacional Tarangire",
-      subtitle: "El reino de los baobabs gigantes y las mayores manadas de elefantes",
+      subtitle: "Parque Tarangire, baobabs y elefantes",
       stage: "safari",
       stageLabel: "Safari Tarangire",
       location: "Parque Nacional Tarangire · Valle del Rift",
       meal: "Pensión completa (picnic en el parque y cena en lodge)",
       accommodation: "Safari Lodge / Tented Camp confortable",
-      images: ["/assets/images/tarangire_safari.jpg"],
+      images: ["/assets/images/safari-grupo.webp"],
       activities: [
         "Salida en vehículos 4x4 todoterreno con techo elevable diseñados especialmente para fotografía de safari.",
         "Recorrido por Tarangire, famoso por sus milenarios árboles baobab y concentraciones récord de elefantes.",
@@ -212,13 +216,13 @@ const P = {
       day: 9,
       date: "13 DE FEBRERO",
       title: "Safari en la Gran Caldera del Cráter Ngorongoro",
-      subtitle: "Maravilla natural del mundo y santuario de los 'Cinco Grandes'",
+      subtitle: "Cráter Ngorongoro y los 'Cinco Grandes'",
       stage: "safari",
       stageLabel: "Cráter Ngorongoro",
       location: "Área de Conservación de Ngorongoro · Lago Magadi",
       meal: "Pensión completa en safari",
       accommodation: "Lodge panorámico en Karatu / Ngorongoro",
-      images: ["/assets/images/ngorongoro_crater.jpg"],
+      images: ["/assets/images/safari-2.webp"],
       activities: [
         "Descenso de 600 metros al interior de la caldera volcánica intacta más grande del planeta.",
         "Exploración de la mayor densidad de fauna salvaje de África: rinocerontes negros, manadas de leones, hipopótamos y flamencos.",
@@ -230,17 +234,17 @@ const P = {
       day: 10,
       date: "14 DE FEBRERO",
       title: "Inmersión Cultural Masai y Retorno a Arusha",
-      subtitle: "Encuentro genuino con la cultura ancestral Masai y mercados locales",
+      subtitle: "Cultura ancestral Masai y mercados locales",
       stage: "cultura",
       stageLabel: "Cultura Masai & Arusha",
       location: "Boma tradicional Masai · Mercado de Arusha",
       meal: "Desayuno en lodge y cena de despedida",
       accommodation: "Hotel Confortable en Arusha ***",
-      images: ["/assets/images/masai_village.jpg"],
+      images: ["/assets/images/maasai.webp"],
       activities: [
         "Visita respetuosa a una comunidad tradicional Masai en su poblado (Boma) para conocer sus costumbres, danzas y vida comunitaria.",
         "Tiempo libre para recorrer los mercados artesanales de Arusha y adquirir recuerdos de madera tallada y telas.",
-        "Cena especial de cierre compartiendo las vivencias de la expedición con todo el grupo y Ricardo Birn."
+        "Cena especial de cierre compartiendo las vivencias de la expedición con todo el grupo y el equipo de Birn Experience."
       ],
       metrics: { distance: "Traslados culturales", ascent: "—", descent: "—", duration: "Día completo" }
     },
@@ -248,13 +252,13 @@ const P = {
       day: 11,
       date: "15 DE FEBRERO",
       title: "Traslado al Aeropuerto Internacional JRO · Retorno",
-      subtitle: "Despedida de Tanzania y vuelo internacional de regreso",
+      subtitle: "Despedida de Tanzania y vuelo de retorno",
       stage: "regreso",
       stageLabel: "Retorno a Casa",
       location: "Arusha → Aeropuerto Kilimanjaro (JRO)",
       meal: "Desayuno en el hotel",
       accommodation: "Fin de nuestros servicios",
-      images: ["/assets/images/hero_kilimanjaro.jpg"],
+      images: ["/assets/images/despedida.webp"],
       activities: [
         "Desayuno en el hotel de Arusha y últimos preparativos de equipaje.",
         "Traslado coordinado en vehículo privado hacia el Aeropuerto Internacional de Kilimanjaro (JRO).",
@@ -264,7 +268,7 @@ const P = {
     }
   ],
   inclusions: [
-    "Coordinación permanente y liderazgo presencial de Ricardo Birn durante todo el viaje.",
+    "Coordinación integral y asesoramiento de Ricardo Birn, seguimiento continuo a la distancia y acompañamiento en destino del guía de Birn Experience junto a los guías locales.",
     "Guías de montaña tanzanos certificados por TANAPA (Parque Nacional Kilimanjaro) con amplia experiencia.",
     "Equipo completo de porteadores para el transporte de equipaje y cocineros de montaña dedicados.",
     "Todos los permisos de ingreso, tasas de acampada y conservación del Parque Nacional Kilimanjaro.",
@@ -315,7 +319,7 @@ const P = {
   faqs: [
     {
       q: "¿Cuál es la tarifa oficial y qué incluye exactamente?",
-      a: "La tarifa oficial es de USD 3.350 por persona en base doble. Incluye el liderazgo de Ricardo Birn, todos los permisos y tasas oficiales del Parque Nacional Kilimanjaro, rescate en montaña, alojamiento en refugios y lodges, pensión completa en trekking y safari, vehículos 4x4 exclusivos, guías locales certificados, porteadores y cocineros."
+      a: "La tarifa oficial es de USD 3.350 por persona en base doble. Incluye la coordinación y asesoramiento de Ricardo Birn, el acompañamiento en destino del guía de Birn Experience y guías locales certificados, todos los permisos y tasas oficiales del Parque Nacional Kilimanjaro, rescate en montaña, alojamiento en refugios y lodges, pensión completa en trekking y safari, vehículos 4x4 exclusivos, porteadores y cocineros."
     },
     {
       q: "¿Se requiere experiencia técnica de escalada para subir al Kilimanjaro?",
@@ -603,26 +607,27 @@ const Hero: React.FC<{ onScrollToItinerary: () => void }> = ({ onScrollToItinera
 
         {/* Headline */}
         <h1 className="font-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] mb-5 tracking-tight">
-          TREKKING AL
+          KILIMANJARO
           <br />
+          TREK{' '}
           <span className="text-[#d45e33] drop-shadow-[0_0_35px_rgba(212,94,51,0.4)]">
-            KILIMANJARO
+            + SAFARIS
           </span>
         </h1>
 
         {/* Subtitle with responsive line-breaks matching reference */}
         <p className="font-body text-base sm:text-lg md:text-xl text-white/85 font-light tracking-wide mb-6 sm:mb-8 max-w-4xl lg:max-w-5xl mx-auto leading-relaxed">
           <span className="hidden md:inline">
-            Un viaje de 11 días que combina alta montaña, refugios alpinos, cultura y naturaleza
+            Un viaje de 11 días que combina trekking en alta montaña, cultura Maasai y naturaleza
             <br />
             recorriendo la Ruta Marangu hasta el Uhuru Peak (5.895 m), y safaris en Tarangire y Ngorongoro.
           </span>
           <span className="inline md:hidden">
-            Una experiencia de 11 días
+            Una experiencia de 11 días que
             <br />
-            que combina alta montaña,
+            combina trekking en alta montaña,
             <br />
-            refugios, cultura y safaris.
+            cultura Maasai y safaris silvestres.
           </span>
         </p>
 
@@ -656,9 +661,7 @@ const Hero: React.FC<{ onScrollToItinerary: () => void }> = ({ onScrollToItinera
           <div className="font-title text-sm sm:text-base md:text-lg text-[#e4a381] tracking-[2px] uppercase flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 font-bold text-center">
             <span className="hidden sm:inline">✦ DEL 5 AL 15 DE FEBRERO 2027</span>
             <span className="inline sm:hidden text-center leading-tight">
-              ✦ 5 AL 15
-              <br />
-              DE FEBRERO 2027
+              ✦ 5 AL 15 DE FEBRERO 2027
             </span>
             <span className="hidden sm:inline text-[#009ea4]">·</span>
             <span className="text-[#d45e33] font-black">USD 3.350 POR PERSONA ✦</span>
@@ -747,36 +750,383 @@ const Cifras: React.FC = () => {
 };
 
 /* =========================================================================
-   4. EXPEDITION MAP SECTION (ie) - Interactive Geographic Overview
+   4. EXPEDITION MAP SECTION - Interactive Geospatial Leaflet Map
    ========================================================================= */
+interface ExpeditionWaypoint {
+  id: string;
+  name: string;
+  dayNumber: number;
+  dayLabel: string;
+  stage: string;
+  zone: string;
+  altitude: string;
+  lat: number;
+  lng: number;
+  highlight: string;
+  imageUrl: string;
+}
+
+const expeditionWaypoints: ExpeditionWaypoint[] = [
+  {
+    id: "jro-moshi-d1",
+    name: "Aeropuerto JRO → Moshi Base",
+    dayNumber: 1,
+    dayLabel: "Día 1 · 05 Febrero",
+    stage: "Llegada y Traslado a Moshi",
+    zone: "marangu",
+    altitude: "890 m",
+    lat: -3.3349,
+    lng: 37.3404,
+    highlight: "Recepción personalizada de nuestro grupo en el Aeropuerto Internacional de Kilimanjaro (JRO), traslado en vehículo privado hacia el hotel en Moshi y briefing técnico general con el equipo.",
+    imageUrl: "/assets/images/aeropuerto.webp"
+  },
+  {
+    id: "marangu-mandara-d2",
+    name: "Puerta de Marangu → Mandara Hut",
+    dayNumber: 2,
+    dayLabel: "Día 2 · 06 Febrero",
+    stage: "Selva Tropical y Comienzo del Trek",
+    zone: "marangu",
+    altitude: "2.720 m",
+    lat: -3.1856,
+    lng: 37.5133,
+    highlight: "Registro oficial en Marangu Gate (1.870 m) y ascenso de 8 km por la densa selva tropical pluvial, hogar de monos colobos y aves exóticas, hasta el primer refugio Mandara Hut.",
+    imageUrl: "/assets/images/inicio-trekking.webp"
+  },
+  {
+    id: "mandara-horombo-d3",
+    name: "Mandara Hut → Horombo Hut",
+    dayNumber: 3,
+    dayLabel: "Día 3 · 07 Febrero",
+    stage: "Páramo Alpino y Vistas a Kibo",
+    zone: "marangu",
+    altitude: "3.720 m",
+    lat: -3.1389,
+    lng: 37.4419,
+    highlight: "Transición de la selva al páramo de senecios gigantes. Se abren vistas panorámicas espectaculares hacia el pico Kibo y las agujas recortadas del Mawenzi.",
+    imageUrl: "/assets/images/horombo-hut.webp"
+  },
+  {
+    id: "zebra-rocks-d4",
+    name: "Aclimatación en Horombo · Zebra Rocks",
+    dayNumber: 4,
+    dayLabel: "Día 4 · 08 Febrero",
+    stage: "Jornada Clave de Aclimatación Activa",
+    zone: "marangu",
+    altitude: "4.020 m",
+    lat: -3.1250,
+    lng: 37.4320,
+    highlight: "Caminata estratégica hacia las singulares franjas geológicas de Zebra Rocks (4.020 m) siguiendo la premisa 'climb high, sleep low', retornando a descansar a Horombo.",
+    imageUrl: "/assets/images/aclimatacion.webp"
+  },
+  {
+    id: "horombo-kibo-d5",
+    name: "Horombo Hut → The Saddle → Kibo Hut",
+    dayNumber: 5,
+    dayLabel: "Día 5 · 09 Febrero",
+    stage: "Desierto Volcánico y Refugio Base",
+    zone: "marangu",
+    altitude: "4.703 m",
+    lat: -3.0789,
+    lng: 37.3828,
+    highlight: "Cruce del árido e hipnótico desierto alpino entre Kibo y Mawenzi hasta Kibo Hut. Cena temprana a las 17:30 h y descanso antes del ataque nocturno a la cumbre.",
+    imageUrl: "/assets/images/dia-5.webp"
+  },
+  {
+    id: "uhuru-peak-summit-d6",
+    name: "Uhuru Peak (Cima de África) · 5.895 m",
+    dayNumber: 6,
+    dayLabel: "Día 6 · 10 Febrero",
+    stage: "Cumbre Uhuru Peak · Techo de África",
+    zone: "cumbre",
+    altitude: "5.895 m",
+    lat: -3.0674,
+    lng: 37.3556,
+    highlight: "Salida a medianoche bajo las estrellas a paso pole pole. Paso por Gilman's Point al amanecer y coronación del Techo de África en Uhuru Peak (5.895 m) junto a los glaciares.",
+    imageUrl: "/assets/images/cima-kilimanjaro.webp"
+  },
+  {
+    id: "descenso-marangu-d7",
+    name: "Descenso a Marangu Gate → Moshi",
+    dayNumber: 7,
+    dayLabel: "Día 7 · 11 Febrero",
+    stage: "Descenso Final y Certificados Oficiales",
+    zone: "marangu",
+    altitude: "1.870 m",
+    lat: -3.2458,
+    lng: 37.5186,
+    highlight: "Descenso final desde Horombo atravesando el bosque hasta la Puerta de Marangu. Entrega de los certificados oficiales de cumbre y traslado al hotel en Moshi para una merecida ducha y cena.",
+    imageUrl: "/assets/images/grupo.webp"
+  },
+  {
+    id: "tarangire-safari-d8",
+    name: "Parque Nacional Tarangire",
+    dayNumber: 8,
+    dayLabel: "Día 8 · 12 Febrero",
+    stage: "Safari en 4x4 entre Baobabs y Elefantes",
+    zone: "safari",
+    altitude: "1.100 m",
+    lat: -3.8333,
+    lng: 36.0000,
+    highlight: "Game drive en vehículos 4x4 todoterreno descubriendo las mayores concentraciones de elefantes de Tanzania, majestuosos baobabs, jirafas y leones a lo largo del río Tarangire.",
+    imageUrl: "/assets/images/safari-grupo.webp"
+  },
+  {
+    id: "ngorongoro-crater-d9",
+    name: "Gran Cráter del Ngorongoro",
+    dayNumber: 9,
+    dayLabel: "Día 9 · 13 Febrero",
+    stage: "Caldera Volcánica y los Cinco Grandes",
+    zone: "safari",
+    altitude: "1.700 m",
+    lat: -3.1700,
+    lng: 35.5800,
+    highlight: "Descenso de 600 metros al interior de la caldera volcánica intacta más grande del planeta para avistar la mayor densidad faunística: rinocerontes negros, leones, hipopótamos y flamencos.",
+    imageUrl: "/assets/images/safari-2.webp"
+  },
+  {
+    id: "aldea-masai-arusha-d10",
+    name: "Comunidad Masai y Mercado de Arusha",
+    dayNumber: 10,
+    dayLabel: "Día 10 · 14 Febrero",
+    stage: "Inmersión Cultural y Tradición Masai",
+    zone: "safari",
+    altitude: "1.400 m",
+    lat: -3.3731,
+    lng: 36.6944,
+    highlight: "Visita respetuosa a una comunidad tradicional Masai en su boma para conocer sus costumbres y danzas ancestrales. Recorrido por los mercados de artesanía local y cena de despedida.",
+    imageUrl: "/assets/images/maasai.webp"
+  },
+  {
+    id: "retorno-jro-d11",
+    name: "Arusha → Aeropuerto Kilimanjaro (JRO)",
+    dayNumber: 11,
+    dayLabel: "Día 11 · 15 Febrero",
+    stage: "Traslado Privado y Vuelo Internacional",
+    zone: "safari",
+    altitude: "890 m",
+    lat: -3.4294,
+    lng: 37.0745,
+    highlight: "Desayuno en el hotel, últimos preparativos de equipaje y traslado coordinado en vehículo privado hacia el Aeropuerto Internacional de Kilimanjaro para tomar el vuelo de regreso.",
+    imageUrl: "/assets/images/despedida.webp"
+  }
+];
+
+const expeditionFilterZones = [
+  { id: "all", line1: "Todos", line2: "(11 Jornadas)", fullLabel: "Todos (11 Jornadas)" },
+  { id: "marangu", line1: "Ruta", line2: "Marangu", icon: Trees, fullLabel: "Ruta Marangu (Trek)" },
+  { id: "cumbre", line1: "Uhuru Peak", line2: "5.895 m", icon: Mountain, fullLabel: "Uhuru Peak (Cumbre)" },
+  { id: "safari", line1: "Safaris &", line2: "Cultura", icon: Compass, fullLabel: "Safaris & Ngorongoro" }
+];
+
 const ExpeditionMapSection: React.FC<{ onSelectDay?: (day: number) => void }> = ({ onSelectDay }) => {
+  const waypoints = expeditionWaypoints;
+  const [selectedPoint, setSelectedPoint] = useState<ExpeditionWaypoint>(waypoints[0]);
   const [activeFilter, setActiveFilter] = useState("all");
-  const [selectedPin, setSelectedPin] = useState<number | null>(6);
+  const [mapType, setMapType] = useState<"satellite" | "topo">("satellite");
 
-  const waypoints = [
-    { id: 1, name: "Aeropuerto JRO → Moshi", day: 1, alt: "890 m", x: 20, y: 75, zone: "marangu", desc: "Recepción de nuestro grupo y preparación técnica." },
-    { id: 2, name: "Marangu Gate → Mandara", day: 2, alt: "2.720 m", x: 34, y: 64, zone: "marangu", desc: "Ascenso por el denso bosque tropical pluvial." },
-    { id: 3, name: "Mandara → Horombo Hut", day: 3, alt: "3.720 m", x: 44, y: 50, zone: "marangu", desc: "Páramo alpino con vistas al Mawenzi y Kibo." },
-    { id: 4, name: "Aclimatación Zebra Rocks", day: 4, alt: "4.020 m", x: 50, y: 44, zone: "marangu", desc: "Jornada clave de aclimatación activa a 4.020 m." },
-    { id: 5, name: "The Saddle → Kibo Hut", day: 5, alt: "4.703 m", x: 58, y: 35, zone: "marangu", desc: "Desierto alpino volcánico y base de cumbre." },
-    { id: 6, name: "UHURU PEAK (5.895 m)", day: 6, alt: "5.895 m", x: 67, y: 20, zone: "cumbre", desc: "¡Cima del Kilimanjaro al amanecer! Techo de África." },
-    { id: 7, name: "Descenso a Marangu Gate", day: 7, alt: "1.870 m", x: 40, y: 68, zone: "marangu", desc: "Entrega de certificados oficiales de cumbre." },
-    { id: 8, name: "Parque Nacional Tarangire", day: 8, alt: "1.100 m", x: 74, y: 72, zone: "safari", desc: "Safari 4x4 entre baobabs y grandes manadas de elefantes." },
-    { id: 9, name: "Cráter del Ngorongoro", day: 9, alt: "1.700 m", x: 86, y: 58, zone: "safari", desc: "Caldera volcánica con los Cinco Grandes de África." },
-    { id: 10, name: "Aldea Tradicional Masai", day: 10, alt: "1.400 m", x: 80, y: 82, zone: "safari", desc: "Encuentro cultural con la comunidad local Masai." },
-    { id: 11, name: "Moshi → Aeropuerto JRO", day: 11, alt: "890 m", x: 25, y: 80, zone: "safari", desc: "Traslado privado final y vuelo de regreso." }
-  ];
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<{ [key: string]: L.Marker }>({});
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
 
-  const filteredWaypoints = waypoints.filter((wp) => {
-    if (activeFilter === "all") return true;
-    return wp.zone === activeFilter;
-  });
+  const filteredPoints = waypoints.filter(
+    (wp) => activeFilter === "all" || wp.zone === activeFilter
+  );
 
-  const activeWp = waypoints.find((w) => w.day === selectedPin) || waypoints[5];
+  const getMarkerIcon = (point: ExpeditionWaypoint, isSelected: boolean) => {
+    const isSpecial = point.dayNumber === 2 || point.dayNumber === 3 || point.dayNumber === 5 || point.dayNumber === 7;
+    const isSafari = point.zone === "safari";
+    const isCumbre = point.zone === "cumbre";
+    const bgColor = isSelected
+      ? "#ff4a11"
+      : isSafari
+      ? "#009ea4"
+      : isCumbre
+      ? "#d45e33"
+      : isSpecial
+      ? "#e4a381"
+      : "#022c3b";
+
+    const size = isSelected ? 36 : 26;
+    const pulseHtml = isSelected
+      ? `<div class="absolute -inset-2.5 rounded-full border-2 border-white animate-ping opacity-75"></div>
+         <div class="absolute -inset-1 rounded-full border-2 border-[#ff7849] opacity-90"></div>`
+      : "";
+
+    const labelVisibility = isSelected
+      ? "block opacity-100 pointer-events-auto"
+      : "hidden group-hover:block opacity-0 group-hover:opacity-100 pointer-events-none";
+
+    const labelPlacement = point.lat < -3.3 ? "bottom-full mb-2" : "top-full mt-1.5";
+
+    const labelHtml = `
+      <div class="marker-label absolute left-1/2 -translate-x-1/2 ${labelPlacement} whitespace-nowrap z-50 transition-opacity duration-150 ${labelVisibility}">
+        <div class="px-2 py-0.5 rounded shadow-lg backdrop-blur-sm ${
+          isSelected
+            ? "bg-[#d45e33] text-white border border-white/60 font-black text-xs"
+            : "bg-[#01141c]/95 text-[#f5f0e8] border border-white/30 font-bold text-[11px]"
+        }">
+          <span>${point.name}</span>
+          <span class="ml-1 opacity-80 font-mono text-[10px] text-[#95cecf]">${point.altitude}</span>
+        </div>
+      </div>
+    `;
+
+    return L.divIcon({
+      className: "custom-expedition-marker group",
+      html: `
+        <div class="relative flex items-center justify-center cursor-pointer select-none" style="width: ${size}px; height: ${size}px;">
+          ${pulseHtml}
+          <div class="w-full h-full rounded-full flex items-center justify-center text-white shadow-xl transition-transform duration-200 ${
+            isSelected ? "scale-110" : "hover:scale-105"
+          }" style="background-color: ${bgColor}; border: ${
+            isSelected ? "3px solid #ffffff" : "2px solid rgba(255,255,255,0.85)"
+          };">
+            <span style="font-size: ${isSelected ? "11px" : "10px"}; font-weight: 900; font-family: sans-serif;">
+              ${point.dayNumber}
+            </span>
+          </div>
+          ${labelHtml}
+        </div>
+      `,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2]
+    });
+  };
+
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
+
+    const map = L.map(mapContainerRef.current, {
+      center: [-3.3, 36.7],
+      zoom: 9,
+      minZoom: 6,
+      maxZoom: 18,
+      zoomControl: true,
+      scrollWheelZoom: true,
+      touchZoom: true,
+      doubleClickZoom: true,
+      boxZoom: true,
+      dragging: true
+    });
+    mapInstanceRef.current = map;
+    map.scrollWheelZoom.enable();
+    map.touchZoom.enable();
+
+    const tileLayer = L.tileLayer(
+      mapType === "satellite"
+        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      {
+        attribution: "© OpenStreetMap, Esri, OpenTopoMap",
+        maxZoom: 18,
+        noWrap: true
+      }
+    ).addTo(map);
+    tileLayerRef.current = tileLayer;
+
+    const latLngs: [number, number][] = waypoints.map((w) => [w.lat, w.lng]);
+    L.polyline(latLngs, {
+      color: "#d45e33",
+      weight: 3.5,
+      opacity: 0.85,
+      dashArray: "6, 8"
+    }).addTo(map);
+
+    const bounds = L.latLngBounds(latLngs);
+    map.fitBounds(bounds, { padding: [35, 35] });
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !tileLayerRef.current) return;
+    const map = mapInstanceRef.current;
+    map.removeLayer(tileLayerRef.current);
+    const newTile = L.tileLayer(
+      mapType === "satellite"
+        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      {
+        attribution: "© OpenStreetMap, Esri, OpenTopoMap",
+        maxZoom: 18,
+        noWrap: true
+      }
+    ).addTo(map);
+    tileLayerRef.current = newTile;
+  }, [mapType]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+    Object.values(markersRef.current).forEach((marker) => marker.remove());
+    markersRef.current = {};
+
+    filteredPoints.forEach((point) => {
+      const isSelected = selectedPoint?.id === point.id;
+      const marker = L.marker([point.lat, point.lng], {
+        icon: getMarkerIcon(point, isSelected),
+        zIndexOffset: isSelected ? 1500 : point.dayNumber === 6 ? 600 : point.dayNumber === 1 ? 400 : 300
+      }).addTo(map);
+
+      marker.on("click", () => {
+        setSelectedPoint(point);
+        map.panTo([point.lat, point.lng], { animate: true, duration: 0.5 });
+      });
+      markersRef.current[point.id] = marker;
+    });
+  }, [filteredPoints, selectedPoint]);
+
+  const currentIndex = waypoints.findIndex((w) => w.id === selectedPoint.id);
+  const prevPoint = currentIndex > 0 ? waypoints[currentIndex - 1] : null;
+  const nextPoint = currentIndex < waypoints.length - 1 ? waypoints[currentIndex + 1] : null;
+
+  const handleNavigate = (target: ExpeditionWaypoint | null) => {
+    if (target) {
+      setSelectedPoint(target);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.panTo([target.lat, target.lng], { animate: true, duration: 0.5 });
+      }
+    }
+  };
+
+  const handleFilterChange = (zoneId: string) => {
+    setActiveFilter(zoneId);
+    const newFiltered = waypoints.filter((wp) => zoneId === "all" || wp.zone === zoneId);
+    if (newFiltered.length > 0 && !newFiltered.some((wp) => wp.id === selectedPoint.id)) {
+      const target = newFiltered[0];
+      setSelectedPoint(target);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.panTo([target.lat, target.lng], { animate: true, duration: 0.5 });
+      }
+    }
+  };
 
   return (
-    <section id="mapa-travesia" className="py-16 sm:py-20 lg:py-24 bg-[#01141c] border-t border-b border-white/10 relative scroll-mt-20">
+    <section
+      id="mapa-travesia"
+      className="py-16 sm:py-20 lg:py-24 bg-[#01141c] border-t border-b border-white/10 relative scroll-mt-20"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
           <div className="inline-flex items-center gap-2 border border-[#d45e33]/40 bg-[#d45e33]/10 text-[#d45e33] font-title text-[12px] sm:text-xs font-black tracking-[3px] px-5 py-1.5 rounded-full uppercase mb-4">
             ✦ CARTOGRAFÍA GEOESPACIAL REAL ✦
@@ -805,335 +1155,506 @@ const ExpeditionMapSection: React.FC<{ onSelectDay?: (day: number) => void }> = 
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Filter bar and controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:flex md:flex-wrap items-center gap-2 w-full md:w-auto">
-            {z.map((filter) => {
-              const isActive = activeFilter === filter.id;
+            {expeditionFilterZones.map((filter) => {
+              const isSelected = activeFilter === filter.id;
+              const Icon = filter.icon;
               return (
                 <button
                   key={filter.id}
-                  onClick={() => setActiveFilter(filter.id)}
+                  onClick={() => handleFilterChange(filter.id)}
                   className={`p-3 md:py-1.5 md:px-3.5 rounded-xl md:rounded-full text-xs font-bold tracking-wider uppercase transition-all cursor-pointer flex flex-col md:flex-row items-center justify-center gap-1 text-center ${
-                    isActive
-                      ? 'bg-[#d45e33] text-white shadow-md'
-                      : 'bg-white/5 border border-white/10 text-[#95cecf] hover:text-white'
+                    isSelected
+                      ? "bg-[#d45e33] text-white shadow-md"
+                      : "bg-white/5 border border-white/10 text-[#95cecf] hover:text-white"
                   }`}
                 >
-                  <span className="md:hidden font-bold leading-tight">
-                    {filter.line1}
-                    <br />
-                    {filter.line2}
-                  </span>
-                  <span className="hidden md:inline">{filter.fullLabel}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="text-right text-xs text-[#95cecf]">
-            <span>11 hitos geográficos mapeados</span>
-          </div>
-        </div>
-
-        {/* Map Canvas / SVG interactive box */}
-        <div className="relative rounded-3xl border border-white/15 bg-[#02222d]/70 backdrop-blur-xl overflow-hidden p-4 sm:p-6 shadow-2xl">
-          <div className="relative w-full h-[320px] sm:h-[420px] md:h-[460px] rounded-2xl overflow-hidden bg-[#01141c]/90 border border-white/10">
-            {/* Topographic grid lines and contours background */}
-            <svg className="absolute inset-0 w-full h-full opacity-35" viewBox="0 0 1000 600" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="routeGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#009ea4" />
-                  <stop offset="50%" stopColor="#d45e33" />
-                  <stop offset="100%" stopColor="#e4a381" />
-                </linearGradient>
-              </defs>
-              {/* Contour lines */}
-              <circle cx="670" cy="120" r="160" fill="none" stroke="#009ea4" strokeWidth="0.8" strokeDasharray="3,3" />
-              <circle cx="670" cy="120" r="110" fill="none" stroke="#d45e33" strokeWidth="1" />
-              <circle cx="670" cy="120" r="60" fill="none" stroke="#e4a381" strokeWidth="1.2" />
-              <circle cx="670" cy="120" r="20" fill="none" stroke="#ffffff" strokeWidth="1.5" />
-              {/* Path connecting waypoints */}
-              <path
-                d="M 200 450 Q 280 410 340 384 T 440 300 T 500 264 T 580 210 T 670 120 T 740 432 T 860 348 T 800 492"
-                fill="none"
-                stroke="url(#routeGrad)"
-                strokeWidth="3.5"
-                strokeDasharray="6,4"
-              />
-            </svg>
-
-            {/* Pins */}
-            {filteredWaypoints.map((wp) => {
-              const isSelected = selectedPin === wp.day;
-              return (
-                <button
-                  key={wp.id}
-                  onClick={() => {
-                    setSelectedPin(wp.day);
-                    if (onSelectDay) onSelectDay(wp.day);
-                  }}
-                  style={{ left: `${wp.x}%`, top: `${wp.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer transition-transform duration-300 ${
-                    isSelected ? 'scale-125 z-30' : 'hover:scale-110 z-20'
-                  }`}
-                  aria-label={wp.name}
-                >
-                  <div className="relative flex flex-col items-center">
-                    <div
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-title text-[11px] sm:text-xs font-black shadow-lg border-2 ${
-                        wp.day === 6
-                          ? 'bg-[#d45e33] border-white text-white animate-pulse'
-                          : isSelected
-                          ? 'bg-[#009ea4] border-white text-white'
-                          : 'bg-[#01141c] border-[#95cecf] text-[#f5f0e8]'
-                      }`}
-                    >
-                      {wp.day}
-                    </div>
-                    <span className="hidden sm:block absolute top-full mt-1 px-2 py-0.5 rounded bg-[#01141c]/90 text-[10px] text-white whitespace-nowrap border border-white/10 font-bold">
-                      {wp.name.split('→')[0]}
+                  <span className="flex items-center gap-1.5">
+                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0 text-[#00e5ee]" />}
+                    <span className="md:hidden font-bold leading-tight">
+                      {filter.line1}
+                      <br />
+                      {filter.line2}
                     </span>
-                  </div>
+                    <span className="hidden md:inline">{filter.fullLabel}</span>
+                  </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Active Waypoint Info Box */}
-          <div className="mt-4 p-4 rounded-2xl bg-[#01141c]/80 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#d45e33] text-white font-title text-[10px] font-black uppercase">
-                  DÍA {activeWp.day}
-                </span>
-                <span className="text-xs font-bold text-[#009ea4] uppercase tracking-wider">
-                  Altitud: {activeWp.alt}
-                </span>
-              </div>
-              <h4 className="font-title text-base sm:text-lg text-white font-bold uppercase">
-                {activeWp.name}
-              </h4>
-              <p className="text-xs sm:text-sm text-[#95cecf] mt-0.5">{activeWp.desc}</p>
-            </div>
+          {/* Desktop satellite/topo switch + instructions */}
+          <div className="hidden sm:flex flex-col items-end text-right gap-2 shrink-0 self-end">
             <button
-              onClick={() => {
-                const itElement = document.getElementById('itinerario');
-                if (itElement) itElement.scrollIntoView({ behavior: 'smooth' });
-                if (onSelectDay) onSelectDay(activeWp.day);
-              }}
-              className="shrink-0 px-4 py-2 rounded-xl bg-white/10 hover:bg-[#d45e33] text-white text-xs font-bold uppercase transition-colors"
+              onClick={() => setMapType(mapType === "satellite" ? "topo" : "satellite")}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#95cecf] hover:text-white border border-white/10 text-xs font-semibold transition-colors cursor-pointer self-end"
             >
-              Ver en Itinerario →
+              <Layers className="w-3.5 h-3.5 text-[#00e5ee]" />
+              <span>{mapType === "satellite" ? "Ver Relieve Topo" : "Ver Satélite"}</span>
+            </button>
+            <p className="text-xs text-white/70 font-light leading-snug text-right">
+              Toca los puntos en el mapa
+              <br />
+              para ver información de cada sitio.
+            </p>
+          </div>
+
+          {/* Mobile satellite/topo switch + instructions */}
+          <div className="flex sm:hidden items-center justify-between gap-3 w-full">
+            <p className="text-[12px] text-white/70 font-light leading-tight text-left flex-1">
+              Toca los puntos en el mapa
+              <br />
+              para ver información de cada
+              <br />
+              sitio debajo del mapa.
+            </p>
+            <button
+              onClick={() => setMapType(mapType === "satellite" ? "topo" : "satellite")}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 text-[#95cecf] border border-white/10 text-xs font-semibold"
+            >
+              <Layers className="w-3.5 h-3.5 text-[#00e5ee]" />
+              <span>{mapType === "satellite" ? "Topo" : "Satélite"}</span>
             </button>
           </div>
         </div>
-      </div>
-    </section>
-  );
-};
 
-/* =========================================================================
-   5. ALTITUDE PROFILE COMPONENT (ae) - Interactive Drag Scroll Chart
-   ========================================================================= */
-const AltitudeProfileSection: React.FC<{ onSelectDay?: (day: number) => void }> = ({ onSelectDay }) => {
-  const [selectedDay, setSelectedDay] = useState(6);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const altitudeData = [
-    { day: 1, loc: "Moshi Base", alt: 890, note: "Encuentro y briefing técnico", keyPoint: false },
-    { day: 2, loc: "Mandara Hut", alt: 2720, note: "Ingreso a la selva pluvial", keyPoint: false },
-    { day: 3, loc: "Horombo Hut", alt: 3720, note: "Páramo alpino y vistas al Kibo", keyPoint: true },
-    { day: 4, loc: "Zebra Rocks", alt: 4020, note: "Aclimatación activa estratégica", keyPoint: true },
-    { day: 5, loc: "Kibo Hut", alt: 4703, note: "Desierto alpino y base de cumbre", keyPoint: true },
-    { day: 6, loc: "UHURU PEAK", alt: 5895, note: "¡Cima de África al amanecer!", keyPoint: true },
-    { day: 7, loc: "Marangu Gate", alt: 1870, note: "Descenso y entrega de certificados", keyPoint: false },
-    { day: 8, loc: "Tarangire Safari", alt: 1100, note: "Fauna salvaje y baobabs", keyPoint: false },
-    { day: 9, loc: "Ngorongoro Crater", alt: 1700, note: "Caldera de los Cinco Grandes", keyPoint: false },
-    { day: 10, loc: "Aldea Masai", alt: 1400, note: "Cultura ancestral y mercado", keyPoint: false },
-    { day: 11, loc: "Aeropuerto JRO", alt: 890, note: "Vuelo de retorno a casa", keyPoint: false }
-  ];
-
-  const maxAlt = 5895;
-  const currentItem = altitudeData.find((d) => d.day === selectedDay) || altitudeData[5];
-
-  // SVG dimensions
-  const svgWidth = 850;
-  const svgHeight = 240;
-  const paddingX = 50;
-  const paddingY = 40;
-
-  const points = altitudeData.map((d, i) => {
-    const x = paddingX + (i / (altitudeData.length - 1)) * (svgWidth - 2 * paddingX);
-    const y = svgHeight - paddingY - (d.alt / maxAlt) * (svgHeight - 2 * paddingY);
-    return { x, y, ...d };
-  });
-
-  const pathD = points.reduce((acc, pt, i) => {
-    return i === 0 ? `M ${pt.x} ${pt.y}` : `${acc} L ${pt.x} ${pt.y}`;
-  }, "");
-
-  const areaD = `${pathD} L ${points[points.length - 1].x} ${svgHeight - paddingY} L ${points[0].x} ${svgHeight - paddingY} Z`;
-
-  return (
-    <section id="perfil-altura" className="py-16 sm:py-20 bg-[#022c3b]/80 px-4 border-t border-[#d45e33]/20 relative">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 border border-[#009ea4]/40 bg-[#009ea4]/10 text-[#009ea4] font-title text-[12px] sm:text-xs font-black tracking-[3px] px-5 py-1.5 rounded-full uppercase mb-4">
-            ✦ PERFIL ALTIMÉTRICO TÉCNICO ✦
+        {/* Map and Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch w-full">
+          {/* Map Column */}
+          <div className="w-full md:col-span-1 lg:col-span-7 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative bg-[#022c3b] h-[260px] sm:h-[340px] md:h-[490px] lg:h-[510px]">
+            <div ref={mapContainerRef} className="w-full h-full z-0" />
+            
           </div>
-          <h2 className="font-title text-2xl sm:text-4xl text-white uppercase tracking-tight font-black mb-3">
-            Evolución de Altitud por Jornada
-          </h2>
-          <p className="text-sm sm:text-base text-[#95cecf] font-light max-w-xl mx-auto">
-            Desde los 890 m en Moshi hasta la cumbre más alta del continente africano a 5.895 m en Uhuru Peak.
-          </p>
-        </div>
 
-        {/* Selected Day Info Badge */}
-        <div className="mb-6 p-4 rounded-2xl bg-[#01141c]/90 border border-white/10 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl bg-[#d45e33] text-white flex items-center justify-center font-title text-sm font-black">
-              {currentItem.day}
-            </span>
+          {/* Card Column */}
+          <div className="w-full md:col-span-1 lg:col-span-5 bg-[#022c3b] border border-white/10 rounded-2xl p-4 sm:p-5 md:p-4.5 lg:p-6 shadow-2xl flex flex-col justify-between min-h-[360px] md:h-[490px] lg:h-[510px] overflow-hidden">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white uppercase">{currentItem.loc}</span>
-                {currentItem.keyPoint && (
-                  <span className="px-2 py-0.5 rounded-full bg-[#009ea4]/20 text-[#009ea4] text-[10px] font-bold uppercase border border-[#009ea4]/40">
-                    Punto Clave
-                  </span>
+              {/* Card Image */}
+              <div className="relative h-32 sm:h-40 md:h-36 lg:h-44 w-full rounded-xl overflow-hidden mb-3 border border-white/10 shrink-0">
+                <img
+                  src={selectedPoint.imageUrl}
+                  alt={selectedPoint.name}
+                  width={500}
+                  height={220}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded text-[12px] sm:text-[11px] font-bold uppercase tracking-wider text-white">
+                  {selectedPoint.dayLabel}
+                </div>
+                <div className="absolute bottom-2.5 right-2.5 bg-[#d45e33] px-2.5 py-1 rounded text-[12px] sm:text-xs font-black text-white">
+                  {selectedPoint.altitude}
+                </div>
+              </div>
+
+              {/* Card Meta & Texts */}
+              <div className="space-y-1.5">
+                <div className="text-[11px] sm:text-xs font-bold text-[#e4a381] uppercase tracking-wider truncate">
+                  {selectedPoint.stage}
+                </div>
+                <h3 className="font-title text-base sm:text-lg md:text-lg lg:text-xl font-black text-white uppercase tracking-wide leading-tight line-clamp-2">
+                  {selectedPoint.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#9fb1b8] leading-relaxed font-light line-clamp-3 md:line-clamp-3 lg:line-clamp-4">
+                  {selectedPoint.highlight}
+                </p>
+              </div>
+
+              {/* Prev / Next navigation */}
+              <div className="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-white/10 text-xs">
+                {prevPoint ? (
+                  <button
+                    onClick={() => handleNavigate(prevPoint)}
+                    className="inline-flex items-center gap-1 text-[#95cecf] hover:text-white transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span>Día {prevPoint.dayNumber}</span>
+                  </button>
+                ) : (
+                  <span className="text-white/20">Inicio</span>
+                )}
+                <span className="text-white/30">|</span>
+                {nextPoint ? (
+                  <button
+                    onClick={() => handleNavigate(nextPoint)}
+                    className="inline-flex items-center gap-1 text-[#95cecf] hover:text-white transition-colors cursor-pointer"
+                  >
+                    <span>Día {nextPoint.dayNumber}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <span className="text-white/20">Final</span>
                 )}
               </div>
-              <p className="text-xs text-[#95cecf]">{currentItem.note}</p>
             </div>
-          </div>
-          <div className="text-right">
-            <span className="text-2xl font-title font-black text-[#d45e33]">{currentItem.alt.toLocaleString()} m</span>
-            <span className="block text-[10px] uppercase text-[#95cecf] tracking-widest">Sobre el nivel del mar</span>
-          </div>
-        </div>
 
-        {/* Horizontal Scrollable Chart Area */}
-        <div
-          ref={scrollRef}
-          className="overflow-x-auto rounded-2xl bg-[#01141c]/95 border border-white/15 p-4 sm:p-6 shadow-xl"
-        >
-          <div className="min-w-[700px] relative">
-            <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto overflow-visible">
-              <defs>
-                <linearGradient id="altGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#d45e33" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#009ea4" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-
-              {/* Horizontal altitude guide lines */}
-              <line x1={paddingX} y1={paddingY} x2={svgWidth - paddingX} y2={paddingY} stroke="#ffffff" strokeOpacity="0.1" strokeDasharray="3,3" />
-              <text x={paddingX - 10} y={paddingY + 4} fill="#95cecf" fontSize="10" textAnchor="end">5.895 m</text>
-
-              <line x1={paddingX} y1={svgHeight / 2} x2={svgWidth - paddingX} y2={svgHeight / 2} stroke="#ffffff" strokeOpacity="0.1" strokeDasharray="3,3" />
-              <text x={paddingX - 10} y={svgHeight / 2 + 4} fill="#95cecf" fontSize="10" textAnchor="end">3.500 m</text>
-
-              <line x1={paddingX} y1={svgHeight - paddingY} x2={svgWidth - paddingX} y2={svgHeight - paddingY} stroke="#ffffff" strokeOpacity="0.15" />
-              <text x={paddingX - 10} y={svgHeight - paddingY + 4} fill="#95cecf" fontSize="10" textAnchor="end">890 m</text>
-
-              {/* Area & Line */}
-              <path d={areaD} fill="url(#altGrad)" />
-              <path d={pathD} fill="none" stroke="#d45e33" strokeWidth="2.5" />
-
-              {/* Points */}
-              {points.map((pt) => {
-                const isSelected = selectedDay === pt.day;
-                return (
-                  <g
-                    key={pt.day}
-                    onClick={() => {
-                      setSelectedDay(pt.day);
-                      if (onSelectDay) onSelectDay(pt.day);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <circle
-                      cx={pt.x}
-                      cy={pt.y}
-                      r={isSelected ? 7 : 4.5}
-                      fill={isSelected ? "#d45e33" : "#009ea4"}
-                      stroke="#ffffff"
-                      strokeWidth={isSelected ? 2.5 : 1.5}
-                    />
-                    <text
-                      x={pt.x}
-                      y={svgHeight - paddingY + 16}
-                      fill={isSelected ? "#d45e33" : "#95cecf"}
-                      fontSize="10"
-                      fontWeight={isSelected ? "bold" : "normal"}
-                      textAnchor="middle"
-                    >
-                      D{pt.day}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+            {/* Bottom Button */}
+            <div className="pt-3 border-t border-white/10 mt-2">
+              <button
+                onClick={() => {
+                  if (onSelectDay) onSelectDay(selectedPoint.dayNumber);
+                  const el = document.getElementById(`day-${selectedPoint.dayNumber}`);
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="btn-editorial text-[12px] sm:text-xs w-full py-2.5 sm:py-3 tracking-wider flex items-center justify-center cursor-pointer shadow-lg active:scale-95 whitespace-nowrap"
+              >
+                <span>VER DÍA {selectedPoint.dayNumber} EN ITINERARIO</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 };
+/* =========================================================================
+   5. ALTITUDE PROFILE COMPONENT - Interactive Drag Scroll Chart
+   ========================================================================= */
+interface AltitudePoint {
+  day: number;
+  location: string;
+  altitude: number;
+  note: string;
+  keyPoint: boolean;
+}
 
+const altitudePointsData: AltitudePoint[] = [
+  { day: 1, location: "Moshi Base", altitude: 890, note: "Llegada, traslado al hotel y briefing técnico", keyPoint: false },
+  { day: 2, location: "Mandara Hut", altitude: 2720, note: "Ascenso por la selva tropical húmeda", keyPoint: false },
+  { day: 3, location: "Horombo Hut", altitude: 3720, note: "Páramo alpino con vistas a Kibo y Mawenzi", keyPoint: true },
+  { day: 4, location: "Zebra Rocks", altitude: 4020, note: "Jornada clave de aclimatación activa", keyPoint: true },
+  { day: 5, location: "Kibo Hut", altitude: 4703, note: "Desierto alpino volcánico y refugio de asalto", keyPoint: true },
+  { day: 6, location: "Uhuru Peak", altitude: 5895, note: "¡Techo de África al amanecer! Glaciares de cumbre", keyPoint: true },
+  { day: 7, location: "Marangu Gate", altitude: 1870, note: "Descenso final y entrega de certificados oficiales", keyPoint: false },
+  { day: 8, location: "Parque Tarangire", altitude: 1100, note: "Safari 4x4 entre baobabs y grandes manadas de elefantes", keyPoint: false },
+  { day: 9, location: "Cráter Ngorongoro", altitude: 1700, note: "Caldera volcánica intacta y fauna de los Cinco Grandes", keyPoint: true },
+  { day: 10, location: "Aldea Masai", altitude: 1400, note: "Encuentro cultural ancestral y mercado local", keyPoint: false },
+  { day: 11, location: "Aeropuerto JRO", altitude: 890, note: "Desayuno, traslado coordinado y vuelo de retorno", keyPoint: false }
+];
+
+const AltitudeProfileSection: React.FC<{ onSelectDay?: (day: number) => void }> = ({ onSelectDay }) => {
+  const pointsData = altitudePointsData;
+  const [selectedDay, setSelectedDay] = useState<number>(6);
+  const [hoveredPoint, setHoveredPoint] = useState<AltitudePoint | null>(null);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef<boolean>(false);
+  const dragInfoRef = useRef<{ startX: number; scrollLeft: number; hasDragged: boolean }>({
+    startX: 0,
+    scrollLeft: 0,
+    hasDragged: false
+  });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const container = scrollContainerRef.current;
+    if (container) {
+      isDraggingRef.current = true;
+      dragInfoRef.current = {
+        startX: e.clientX,
+        scrollLeft: container.scrollLeft,
+        hasDragged: false
+      };
+    }
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      const container = scrollContainerRef.current;
+      if (!container) return;
+      const deltaX = e.clientX - dragInfoRef.current.startX;
+      if (Math.abs(deltaX) > 4) {
+        dragInfoRef.current.hasDragged = true;
+      }
+      container.scrollLeft = dragInfoRef.current.scrollLeft - deltaX;
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        setTimeout(() => {
+          dragInfoRef.current.hasDragged = false;
+        }, 50);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseup", handleMouseUp, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  const handleTouchStart = () => {
+    dragInfoRef.current.hasDragged = false;
+  };
+
+  const handleTouchMove = () => {
+    dragInfoRef.current.hasDragged = true;
+  };
+
+  const getX = (index: number) => 45 + (index / (pointsData.length - 1)) * 810;
+  const getY = (alt: number) => 205 - (alt / 6000) * 170;
+
+  const linePath = pointsData.reduce((acc, pt, index) => {
+    const x = getX(index);
+    const y = getY(pt.altitude);
+    return index === 0 ? `M ${x} ${y}` : `${acc} L ${x} ${y}`;
+  }, "");
+
+  const areaPath = `${linePath} L ${getX(pointsData.length - 1)} 205 L ${getX(0)} 205 Z`;
+
+  const activeDay = hoveredPoint?.day ?? selectedDay;
+  const activeIndex = pointsData.findIndex((pt) => pt.day === activeDay);
+  const activePoint = activeIndex >= 0 ? pointsData[activeIndex] : pointsData[0];
+
+  const handlePointClick = (dayNumber: number) => {
+    if (dragInfoRef.current.hasDragged) return;
+    setSelectedDay(dayNumber);
+  };
+
+  return (
+    <section
+      id="perfil-altura"
+      className="py-16 sm:py-20 bg-[#022c3b]/80 px-4 border-t border-[#d45e33]/20 relative scroll-mt-20"
+    >
+      <div className="max-w-6xl mx-auto">
+        <h2 className="font-title text-2xl md:text-4xl text-[#d45e33] text-center tracking-[3px] uppercase mb-2 font-black">
+          Perfil de Altitud
+        </h2>
+        <div className="flex items-center justify-center gap-4 mb-10">
+          <div className="h-px w-24 bg-gradient-to-r from-transparent to-[#d45e33]" />
+          <span className="text-[#d45e33] text-[0.6rem]">◆</span>
+          <div className="h-px w-24 bg-gradient-to-l from-transparent to-[#d45e33]" />
+        </div>
+
+        <div className="bg-[#022c3b] p-5 sm:p-8 rounded-2xl border border-white/10 shadow-2xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-6">
+            <div className="text-[12px] sm:text-xs uppercase tracking-widest text-white font-bold">
+              Escala de Elevación: Desde Moshi (890 m) hasta Uhuru Peak (5.895 m)
+            </div>
+            <div className="text-xs sm:text-sm text-[#95cecf] flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-white text-[#022c3b] shrink-0 font-bold text-[10px]">
+                i
+              </span>
+              <span>Toca o pasa el cursor sobre un nodo para ver información</span>
+            </div>
+          </div>
+
+          <div
+            ref={scrollContainerRef}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            style={{ touchAction: "pan-x pan-y" }}
+            className="w-full overflow-x-auto pb-4 custom-scrollbar cursor-grab active:cursor-grabbing select-none"
+          >
+            <div className="min-w-[680px]">
+              <svg viewBox="0 0 900 240" className="w-full h-auto overflow-visible select-none">
+                <defs>
+                  <linearGradient id="altGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#d45e33" stopOpacity="0.45" />
+                    <stop offset="60%" stopColor="#009ea4" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="#022c3b" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+
+                {[1500, 3000, 4500, 5895].map((val) => {
+                  const y = getY(val);
+                  return (
+                    <g key={val}>
+                      <line
+                        x1={45}
+                        y1={y}
+                        x2={855}
+                        y2={y}
+                        stroke="#ffffff"
+                        strokeOpacity="0.08"
+                        strokeDasharray="4 4"
+                      />
+                      <text
+                        x={35}
+                        y={y + 3}
+                        fill="#95cecf"
+                        fontSize="9"
+                        textAnchor="end"
+                        fontFamily="sans-serif"
+                      >
+                        {val.toLocaleString()} m
+                      </text>
+                    </g>
+                  );
+                })}
+
+                <path d={areaPath} fill="url(#altGradient)" />
+                <path d={linePath} fill="none" stroke="#d45e33" strokeWidth="2.5" />
+
+                {activePoint && activeIndex >= 0 && (() => {
+                  const cx = getX(activeIndex);
+                  const cy = getY(activePoint.altitude);
+                  const boxX = Math.max(45, Math.min(665, cx - 95));
+                  const isHigh = cy < 60;
+                  const boxY = isHigh ? cy + 14 : cy - 50 - 12;
+                  return (
+                    <g className="pointer-events-none transition-opacity duration-200">
+                      <line
+                        x1={cx}
+                        y1={isHigh ? cy + 6 : cy - 6}
+                        x2={cx}
+                        y2={isHigh ? boxY : boxY + 50}
+                        stroke="#d45e33"
+                        strokeWidth="1.2"
+                        strokeDasharray="2 2"
+                        opacity="0.8"
+                      />
+                      <rect
+                        x={boxX}
+                        y={boxY}
+                        width={190}
+                        height={50}
+                        rx="8"
+                        fill="#01141c"
+                        fillOpacity="0.96"
+                        stroke="#d45e33"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.9"
+                      />
+                      <text
+                        x={boxX + 95}
+                        y={boxY + 18}
+                        fill="#95cecf"
+                        fontSize="11"
+                        fontWeight="700"
+                        textAnchor="middle"
+                        fontFamily="sans-serif"
+                      >
+                        DÍA {activePoint.day} · {activePoint.location}
+                      </text>
+                      <text
+                        x={boxX + 95}
+                        y={boxY + 36}
+                        fill="#ffffff"
+                        fontSize="13"
+                        fontWeight="900"
+                        textAnchor="middle"
+                        fontFamily="sans-serif"
+                      >
+                        {activePoint.altitude.toLocaleString()} m
+                      </text>
+                    </g>
+                  );
+                })()}
+
+                {pointsData.map((pt, index) => {
+                  const cx = getX(index);
+                  const cy = getY(pt.altitude);
+                  const isActive = activeDay === pt.day;
+                  return (
+                    <g
+                      key={pt.day}
+                      className="cursor-pointer"
+                      onClick={() => handlePointClick(pt.day)}
+                      onMouseEnter={() => setHoveredPoint(pt)}
+                      onMouseLeave={() => setHoveredPoint(null)}
+                    >
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={isActive ? 8 : pt.keyPoint ? 6 : 4.5}
+                        fill={isActive ? "#ff7849" : pt.keyPoint ? "#d45e33" : "#009ea4"}
+                        stroke="#ffffff"
+                        strokeWidth={isActive ? 2.5 : 1.5}
+                      />
+                      <text
+                        x={cx}
+                        y={228}
+                        fill={isActive ? "#d45e33" : "#95cecf"}
+                        fontSize="10"
+                        fontWeight={isActive ? "900" : "600"}
+                        textAnchor="middle"
+                        fontFamily="sans-serif"
+                      >
+                        D{pt.day}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#95cecf]">
+            <div className="text-white/90">
+              <strong className="text-[#d45e33]">Día {activePoint.day}:</strong>{" "}
+              {activePoint.location} — {activePoint.note} ({activePoint.altitude.toLocaleString()} m)
+            </div>
+            <div className="text-[11px] text-[#95cecf] font-mono">
+              ✦ Cota Máxima: 5.895 m · Cota Valle: 890 m
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 /* =========================================================================
    6. DAY CARD (U) - Inner Card for Itinerary
    ========================================================================= */
 const DayCard: React.FC<{
   day: typeof P.itinerary[0];
   isActive: boolean;
-  onConsultClick: () => void;
-}> = ({ day, isActive, onConsultClick }) => {
+}> = ({ day, isActive }) => {
   const hasMetrics = !!(day.metrics && (day.metrics.distance || day.metrics.ascent));
 
   return (
     <article
       id={`day-${day.day}`}
-      className={`h-full w-full rounded-3xl border border-white/12 backdrop-blur-xl p-4 sm:p-5 lg:p-6 flex flex-col justify-between shadow-[0_24px_70px_rgba(0,0,0,0.65)] transition-all duration-500 overflow-hidden relative ${
+      className={`h-full w-full rounded-3xl border border-white/12 p-4 sm:p-5 lg:p-6 flex flex-col justify-between shadow-[0_24px_70px_rgba(0,0,0,0.65)] transition-all duration-500 overflow-hidden relative [-webkit-font-smoothing:antialiased] [-moz-osx-font-smoothing:grayscale] [text-rendering:optimizeLegibility] ${
         isActive
-          ? 'bg-[#011c27]/96 ring-1 ring-[#009ea4]/40 border-white/20 opacity-[0.96]'
-          : 'bg-[#011c27]/85 opacity-80'
+          ? 'bg-[#011c27] ring-1 ring-[#009ea4]/40 border-white/20 opacity-100 shadow-[0_24px_70px_rgba(0,0,0,0.85)]'
+          : 'bg-[#011c27]/85 backdrop-blur-md opacity-80'
       }`}
     >
-      <div className="pointer-events-none absolute -right-20 -top-20 w-72 h-72 rounded-full bg-[#009ea4]/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 -bottom-20 w-72 h-72 rounded-full bg-[#d45e33]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 -top-20 w-72 h-72 rounded-full bg-[radial-gradient(circle,rgba(0,158,164,0.15)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute -left-20 -bottom-20 w-72 h-72 rounded-full bg-[radial-gradient(circle,rgba(212,94,51,0.15)_0%,transparent_70%)]" />
 
-      <div className="relative z-10 flex flex-col h-full justify-between gap-3">
+      <div className="relative z-10 flex flex-col h-full justify-between gap-2.5 sm:gap-3">
         {/* Header */}
-        <div>
+        <div className="shrink-0">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
             <div className="hidden lg:flex items-center gap-2.5">
               <span className="px-3 py-1 rounded-xl bg-[#d45e33] text-white font-title text-xs font-black uppercase tracking-wider shadow-sm">
                 DÍA {day.day}
               </span>
-              <span className="text-sm font-bold text-[#95cecf] uppercase tracking-wider">
+              <span className="text-xs sm:text-sm font-bold text-[#95cecf] uppercase tracking-wider">
                 {day.date}
               </span>
             </div>
-            <span className="hidden md:inline-block text-[11px] lg:text-xs font-bold uppercase tracking-wider text-[#00e5ee]">
+            <span className="hidden md:inline-block text-xs font-bold uppercase tracking-wider text-[#00e5ee]">
               {day.stageLabel}
             </span>
           </div>
-          <div className="text-[12px] sm:text-sm uppercase tracking-widest text-[#d45e33] font-bold mb-0.5 line-clamp-1">
+
+          <div className="text-[11px] sm:text-xs md:text-xs lg:text-sm uppercase tracking-widest text-[#d45e33] font-bold mb-0.5 md:mb-1 leading-snug line-clamp-1">
             {day.subtitle}
           </div>
-          <h3 className="font-title text-[12px] sm:text-xl lg:text-2xl font-black text-white uppercase tracking-tight leading-tight line-clamp-1 sm:line-clamp-2">
+
+          <h3 className="font-title text-base sm:text-lg md:text-xl lg:text-2xl font-black text-white uppercase tracking-tight leading-snug md:leading-tight line-clamp-2">
             {day.title}
           </h3>
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 lg:gap-5 items-center flex-1 min-h-0">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 sm:gap-3.5 lg:gap-5 items-start md:items-center flex-1 min-h-0 overflow-y-auto md:overflow-visible pr-0.5 md:pr-0 scrollbar-thin">
           {/* Photo */}
-          <div className="md:col-span-5 flex flex-col justify-center">
-            <div className="w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg relative h-36 sm:h-40 md:h-[210px] lg:h-[225px] xl:h-[235px]">
+          <div className="md:col-span-5 flex flex-col justify-center shrink-0">
+            <div className="w-full rounded-2xl overflow-hidden border border-white/10 shadow-lg relative h-24 sm:h-28 md:h-[185px] lg:h-[195px] xl:h-[205px]">
               <img
                 src={day.images[0]}
                 alt={day.title}
@@ -1143,68 +1664,56 @@ const DayCard: React.FC<{
                 decoding="async"
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
-                className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105 select-none pointer-events-none"
+                className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105 pointer-events-none"
               />
             </div>
           </div>
 
           {/* Details & Metrics */}
-          <div className="md:col-span-7 flex flex-col justify-center gap-2 lg:gap-2.5 min-h-0">
+          <div className="md:col-span-7 flex flex-col justify-between gap-1.5 md:gap-2 min-h-0 flex-1">
             {hasMetrics && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs shrink-0">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 p-1.5 sm:p-2 md:p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs shrink-0">
                 {day.metrics?.distance && (
                   <div>
-                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] font-bold uppercase">
-                      <Clock className="w-3 h-3 text-[#00e5ee]" />
-                      <span>Distancia</span>
+                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] sm:text-[11px] font-bold uppercase">
+                      <Clock className="w-3 h-3 text-[#00e5ee] shrink-0" />
+                      <span className="truncate">Distancia</span>
                     </div>
-                    <span className="font-bold text-white text-xs sm:text-sm">{day.metrics.distance}</span>
+                    <span className="font-bold text-white text-[11px] sm:text-sm truncate block">{day.metrics.distance}</span>
                   </div>
                 )}
                 {day.metrics?.ascent && (
                   <div>
-                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] font-bold uppercase">
-                      <Mountain className="w-3 h-3 text-[#d45e33]" />
-                      <span>Ascenso</span>
+                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] sm:text-[11px] font-bold uppercase">
+                      <Mountain className="w-3 h-3 text-[#d45e33] shrink-0" />
+                      <span className="truncate">Ascenso</span>
                     </div>
-                    <span className="font-bold text-white text-xs sm:text-sm">{day.metrics.ascent}</span>
+                    <span className="font-bold text-white text-[11px] sm:text-sm truncate block">{day.metrics.ascent}</span>
                   </div>
                 )}
                 {day.metrics?.descent && (
                   <div>
-                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] font-bold uppercase">
-                      <ArrowDown className="w-3 h-3 text-[#95cecf]" />
-                      <span>Descenso</span>
+                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] sm:text-[11px] font-bold uppercase">
+                      <ArrowDown className="w-3 h-3 text-[#95cecf] shrink-0" />
+                      <span className="truncate">Descenso</span>
                     </div>
-                    <span className="font-bold text-white text-xs sm:text-sm">{day.metrics.descent}</span>
+                    <span className="font-bold text-white text-[11px] sm:text-sm truncate block">{day.metrics.descent}</span>
                   </div>
                 )}
                 {day.metrics?.duration && (
                   <div>
-                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] font-bold uppercase">
-                      <Clock className="w-3 h-3 text-[#e4a381]" />
-                      <span>Tiempo</span>
+                    <div className="flex items-center gap-1 text-[#95cecf] text-[10px] sm:text-[11px] font-bold uppercase">
+                      <Clock className="w-3 h-3 text-[#e4a381] shrink-0" />
+                      <span className="truncate">Tiempo</span>
                     </div>
-                    <span className="font-bold text-white text-xs sm:text-sm">{day.metrics.duration}</span>
+                    <span className="font-bold text-white text-[11px] sm:text-sm truncate block">{day.metrics.duration}</span>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Badges: Accommodation & Meal */}
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[#f5f0e8] text-[11px]">
-                <Tent className="w-3 h-3 text-[#009ea4]" />
-                <span className="truncate max-w-[200px]">{day.accommodation}</span>
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[#f5f0e8] text-[11px]">
-                <Utensils className="w-3 h-3 text-[#d45e33]" />
-                <span className="truncate max-w-[200px]">{day.meal}</span>
-              </span>
-            </div>
-
-            {/* Activities bullets */}
-            <ul className="space-y-1.5 text-xs sm:text-sm text-[#f5f0e8]/90 font-light overflow-y-auto max-h-[140px] pr-1">
+            {/* Activities bullets - Placed ABOVE badges in all views */}
+            <ul className="space-y-1 md:space-y-1.5 text-sm md:text-xs lg:text-[13px] xl:text-sm text-[#f5f0e8]/90 font-light leading-snug md:leading-tight lg:leading-snug">
               {day.activities.map((act, i) => (
                 <li key={i} className="flex items-start gap-2 leading-relaxed">
                   <span className="text-[#009ea4] mt-0.5 shrink-0 text-xs">◆</span>
@@ -1212,22 +1721,27 @@ const DayCard: React.FC<{
                 </li>
               ))}
             </ul>
+
+            {/* Badges: Accommodation & Meal - Placed BELOW activities (Selector 1 below Selector 2) */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs shrink-0">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 md:py-1 rounded-lg bg-white/5 border border-white/10 text-[#f5f0e8] text-[11px] sm:text-xs">
+                <Tent className="w-3.5 h-3.5 text-[#009ea4] shrink-0" />
+                <span className="truncate max-w-[170px] sm:max-w-[200px]">{day.accommodation}</span>
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 md:py-1 rounded-lg bg-white/5 border border-white/10 text-[#f5f0e8] text-[11px] sm:text-xs">
+                <Utensils className="w-3.5 h-3.5 text-[#d45e33] shrink-0" />
+                <span className="truncate max-w-[170px] sm:max-w-[200px]">{day.meal}</span>
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Card Footer Consultation CTA */}
-        <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-          <span className="text-[11px] text-[#95cecf] flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-[#d45e33]" />
-            <span className="truncate max-w-[240px]">{day.location}</span>
+        {/* Card Footer: Location info only (consultation button and stageLabel span removed) */}
+        <div className="pt-2 sm:pt-2.5 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm text-[#95cecf] shrink-0 mt-auto md:mt-0">
+          <span className="flex items-center gap-1.5 font-medium">
+            <MapPin className="w-3.5 h-3.5 text-[#d45e33] shrink-0" />
+            <span className="truncate max-w-[260px] sm:max-w-none">{day.location}</span>
           </span>
-          <button
-            onClick={onConsultClick}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#d45e33] hover:text-[#e4a381] transition-colors cursor-pointer"
-          >
-            <WhatsAppIcon className="w-3 h-3" />
-            <span>Consultar este día</span>
-          </button>
         </div>
       </div>
     </article>
@@ -1375,7 +1889,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
     <section
       ref={sectionRef}
       id="itinerario"
-      className="py-16 sm:py-20 lg:py-24 bg-[#022c3b] relative scroll-mt-20 w-full overflow-hidden select-none border-t border-b border-white/10"
+      className="py-16 sm:py-20 lg:py-24 bg-[#022c3b] relative scroll-mt-20 w-full overflow-hidden border-t border-b border-white/10"
     >
       <div className="pointer-events-none absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[340px] bg-[#009ea4]/10 blur-[130px] rounded-full" />
       <div className="pointer-events-none absolute right-10 bottom-1/4 w-[480px] h-[280px] bg-[#d45e33]/10 blur-[120px] rounded-full" />
@@ -1491,7 +2005,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
 
         {/* 1. DESKTOP 3D CAROUSEL (hidden lg:block) */}
         <div
-          className="relative hidden lg:block overflow-hidden py-2 lg:min-h-[510px] xl:min-h-[520px] px-6 lg:px-[90px] xl:px-[120px] cursor-grab active:cursor-grabbing select-none"
+          className="relative hidden lg:block overflow-hidden py-2 lg:min-h-[540px] xl:min-h-[550px] px-6 lg:px-[90px] xl:px-[120px] cursor-grab active:cursor-grabbing select-none"
           style={{ touchAction: 'pan-y' }}
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
@@ -1514,7 +2028,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
             <ChevronRight className="w-5 h-5" />
           </button>
 
-          <div className="relative h-[490px] w-full" style={{ perspective: '1100px' }}>
+          <div className="relative h-[520px] xl:h-[530px] w-full" style={{ perspective: '1100px' }}>
             {itinerary.map((dayItem, idx) => {
               const diff = B(idx, currentIndex, count);
               const isActive = diff === 0;
@@ -1533,7 +2047,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                 tx = 0;
                 scale = 1;
                 rotY = 0;
-                opacity = 0.98;
+                opacity = 1;
                 blur = 0;
                 zIdx = 30;
                 pointer = 'auto';
@@ -1574,19 +2088,21 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                       if (isNext) handleNext();
                     }
                   }}
-                  className={`absolute left-1/2 top-0 h-[485px] w-full max-w-[680px] -translate-x-1/2 transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  className={`absolute inset-x-0 mx-auto top-0 h-[510px] xl:h-[520px] w-full max-w-[690px] transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                     pointer === 'auto' ? 'cursor-pointer' : 'pointer-events-none'
                   }`}
                   style={{
-                    transform: `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
-                    opacity,
-                    filter: `blur(${blur}px)`,
+                    transform: isActive ? 'none' : `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
+                    opacity: isActive ? 1 : opacity,
+                    filter: isActive ? 'none' : `blur(${blur}px)`,
                     zIndex: zIdx,
-                    transformStyle: 'preserve-3d'
+                    transformStyle: isActive ? 'flat' : 'preserve-3d',
+                    backfaceVisibility: isActive ? 'visible' : 'hidden',
+                    WebkitFontSmoothing: 'antialiased'
                   }}
                   aria-hidden={!isActive}
                 >
-                  <DayCard day={dayItem} isActive={isActive} onConsultClick={handleConsultDay} />
+                  <DayCard day={dayItem} isActive={isActive} />
                 </div>
               );
             })}
@@ -1634,7 +2150,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            <div className="relative h-[480px] w-full" style={{ perspective: '1100px' }}>
+            <div className="relative h-[515px] w-full" style={{ perspective: '1100px' }}>
               {itinerary.map((dayItem, idx) => {
                 const diff = B(idx, currentIndex, count);
                 const isActive = diff === 0;
@@ -1653,7 +2169,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                   tx = 0;
                   scale = 1;
                   rotY = 0;
-                  opacity = 0.96;
+                  opacity = 1;
                   blur = 0;
                   zIdx = 30;
                   pointer = 'auto';
@@ -1694,19 +2210,21 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                         if (isNext) handleNext();
                       }
                     }}
-                    className={`absolute left-1/2 top-0 h-[475px] w-full max-w-[660px] -translate-x-1/2 transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    className={`absolute inset-x-0 mx-auto top-0 h-[505px] w-full max-w-[660px] transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                       pointer === 'auto' ? 'cursor-pointer' : 'pointer-events-none'
                     }`}
                     style={{
-                      transform: `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
-                      opacity,
-                      filter: `blur(${blur}px)`,
+                      transform: isActive ? 'none' : `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
+                      opacity: isActive ? 1 : opacity,
+                      filter: isActive ? 'none' : `blur(${blur}px)`,
                       zIndex: zIdx,
-                      transformStyle: 'preserve-3d'
+                      transformStyle: isActive ? 'flat' : 'preserve-3d',
+                      backfaceVisibility: isActive ? 'visible' : 'hidden',
+                      WebkitFontSmoothing: 'antialiased'
                     }}
                     aria-hidden={!isActive}
                   >
-                    <DayCard day={dayItem} isActive={isActive} onConsultClick={handleConsultDay} />
+                    <DayCard day={dayItem} isActive={isActive} />
                   </div>
                 );
               })}
@@ -1772,7 +2290,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            <div className="relative h-[535px] sm:h-[505px] w-full" style={{ perspective: '850px' }}>
+            <div className="relative h-[640px] sm:h-[610px] w-full" style={{ perspective: '850px' }}>
               {itinerary.map((dayItem, idx) => {
                 const diff = B(idx, currentIndex, count);
                 const isActive = diff === 0;
@@ -1791,7 +2309,7 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                   tx = 0;
                   scale = 1;
                   rotY = 0;
-                  opacity = 0.98;
+                  opacity = 1;
                   blur = 0;
                   zIdx = 30;
                   pointer = 'auto';
@@ -1832,19 +2350,21 @@ const Itinerario: React.FC<{ selectedDayNumber: number | null }> = ({ selectedDa
                         if (isNext) handleNext();
                       }
                     }}
-                    className={`absolute left-1/2 top-0 h-[525px] sm:h-[495px] w-full max-w-[360px] sm:max-w-[420px] -translate-x-1/2 transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    className={`absolute inset-x-0 mx-auto top-0 h-[630px] sm:h-[600px] w-full max-w-[360px] sm:max-w-[420px] transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                       pointer === 'auto' ? 'cursor-pointer' : 'pointer-events-none'
                     }`}
                     style={{
-                      transform: `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
-                      opacity,
-                      filter: `blur(${blur}px)`,
+                      transform: isActive ? 'none' : `translateX(${tx}px) scale(${scale}) rotateY(${rotY}deg)`,
+                      opacity: isActive ? 1 : opacity,
+                      filter: isActive ? 'none' : `blur(${blur}px)`,
                       zIndex: zIdx,
-                      transformStyle: 'preserve-3d'
+                      transformStyle: isActive ? 'flat' : 'preserve-3d',
+                      backfaceVisibility: isActive ? 'visible' : 'hidden',
+                      WebkitFontSmoothing: 'antialiased'
                     }}
                     aria-hidden={!isActive}
                   >
-                    <DayCard day={dayItem} isActive={isActive} onConsultClick={handleConsultDay} />
+                    <DayCard day={dayItem} isActive={isActive} />
                   </div>
                 );
               })}
@@ -1916,7 +2436,7 @@ const CoordinadorNosotros: React.FC = () => {
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-[#d45e33] shrink-0 shadow-lg relative bg-[#01141c] aspect-square"
                   >
                     <img
-                      src="/assets/images/ricardo1.webp"
+                      src="/assets/images/ricardo-birn.webp"
                       alt="Ricardo Birn - Coordinador de expedición"
                       width={96}
                       height={96}
@@ -1941,10 +2461,10 @@ const CoordinadorNosotros: React.FC = () => {
                 {/* Adapted narrative using "Nosotros" voice */}
                 <div className="space-y-4 text-[15px] sm:text-base text-[#f5f0e8]/90 leading-relaxed font-light">
                   <p>
-                    Nosotros coordinamos personalmente cada expedición y viaje con la impronta de Birn Experience. La vasta trayectoria de Ricardo Birn en las cumbres más exigentes del planeta —incluyendo los Himalayas y los Andes— sumada a su formación profesional académica, garantiza un criterio estricto de seguridad, dosificación metódica del esfuerzo y acompañamiento humano cercano para cada participante.
+                    Coordinamos y asesoramos cada expedición con la impronta y respaldo de Birn Experience. Ricardo Birn coordina minuciosamente toda la etapa previa y acompaña el desarrollo del viaje a la distancia, estando pendiente minuto a minuto. Su vasta trayectoria en las cumbres más exigentes del planeta —incluyendo los Himalayas y los Andes— sumada a su formación profesional, garantiza un criterio estricto de seguridad, dosificación metódica del esfuerzo y soporte constante para cada participante.
                   </p>
                   <p>
-                    En el programa del Kilimanjaro, supervisamos personalmente la logística completa: desde la bienvenida en el Aeropuerto Internacional JRO y el monitoreo diario de saturación de oxígeno en los refugios de la Ruta Marangu, hasta la conducción en los safaris de Tarangire y el Cráter de Ngorongoro.
+                    En Tanzania, los expedicionarios son recibidos por el guía de Birn Experience y el equipo de guías locales certificados, quienes brindan la coordinación en terreno, acompañamiento cercano y supervisión constante: desde la bienvenida en el Aeropuerto Internacional JRO y el monitoreo diario de saturación de oxígeno en los refugios de la Ruta Marangu, hasta la conducción en los safaris de Tarangire y el Cráter de Ngorongoro.
                   </p>
                 </div>
               </div>
@@ -1979,15 +2499,29 @@ const CoordinadorNosotros: React.FC = () => {
             {/* Right: Equipo de Guías Locales Tanzanos */}
             <div className="lg:col-span-5 p-6 sm:p-10 md:p-12 flex flex-col justify-between bg-black/15">
               <div>
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                  <div className="w-10 h-10 rounded-xl bg-[#009ea4]/20 text-[#009ea4] flex items-center justify-center font-black border border-[#009ea4]/40 shrink-0">
-                    <Award className="w-5 h-5 stroke-[2.5]" />
+                <div className="flex items-center gap-4 mb-6 pb-4 border-b border-white/10">
+                  <div
+                    style={boxSize ? { height: `${boxSize}px`, width: `${boxSize}px`, flexShrink: 0 } : undefined}
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-[#009ea4] shrink-0 shadow-lg relative bg-[#01141c] aspect-square"
+                  >
+                    <img
+                      src="/assets/images/equipo.webp"
+                      alt="Equipo de Guías Locales - Birn Experience & Guías TANAPA"
+                      width={96}
+                      height={96}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div>
-                    <h3 className="font-title text-xl text-white font-black uppercase tracking-wider">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="text-xs uppercase tracking-widest text-[#009ea4] font-bold block mb-1">
+                      Equipo en Destino & TANAPA
+                    </span>
+                    <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider leading-tight">
                       Equipo de Guías Locales
                     </h3>
-                    <p className="text-xs text-[#95cecf]">
+                    <p className="text-xs sm:text-sm text-[#95cecf] font-medium leading-normal mt-0.5">
                       Birn Experience & Guías TANAPA Certificados
                     </p>
                   </div>
@@ -1995,10 +2529,10 @@ const CoordinadorNosotros: React.FC = () => {
 
                 <div className="space-y-4 text-sm text-[#f5f0e8]/90 leading-relaxed font-light">
                   <p>
-                    Trabajamos además en estrecha articulación con <strong>guías locales tanzanos registrados en el Parque Nacional Kilimanjaro</strong>, porteadores experimentados y cocineros profesionales de montaña.
+                    Junto al <strong>guía de Birn Experience</strong> que recibe y acompaña al grupo en destino, trabajamos en estrecha articulación con <strong>guías locales tanzanos registrados en el Parque Nacional Kilimanjaro</strong>, porteadores experimentados y cocineros profesionales de montaña.
                   </p>
                   <p>
-                    Su profundo conocimiento de las pendientes del volcán, la aclimatación en cada piso altitudinal y el ritmo tradicional <em>"pole pole"</em> nos aseguran un índice sobresaliente de éxito en cumbre sin comprometer la integridad de ningún miembro del grupo.
+                    Este equipo conjunto brinda coordinación presencial, atención en español y un profundo conocimiento de las pendientes del volcán, asegurando una aclimatación óptima bajo el ritmo tradicional <em>"pole pole"</em> y un índice sobresaliente de éxito en cumbre cuidando en todo momento la integridad del grupo.
                   </p>
                 </div>
 
@@ -2021,13 +2555,149 @@ const CoordinadorNosotros: React.FC = () => {
 };
 
 /* =========================================================================
-   9. INCLUSIONES COMPONENT (G) - 100% Matching Split Columns & Styles
+   9. INCLUSIONES COMPONENT - Diseño Original con Pestañas Interactivas y Detalle Completo
    ========================================================================= */
 const Inclusiones: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'kili' | 'safari' | 'noincluye'>('kili');
+
+  const kiliItems = [
+    {
+      title: "Recogida y regreso:",
+      desc: "Traslados oficiales desde y hacia el Aeropuerto Internacional de Kilimanjaro (JRO)."
+    },
+    {
+      title: "Transporte privado:",
+      desc: "Transporte exclusivo desde el hotel en Moshi hasta la puerta de los Parques (punto de partida) y de regreso al finalizar."
+    },
+    {
+      title: "Hoteles en Moshi:",
+      desc: "2 noches de hotel de calidad seleccionada (la noche anterior y posterior a la subida), con desayuno incluido."
+    },
+    {
+      title: "Guías calificados en español:",
+      desc: "Nuestro equipo de guías tanzanos certificados por TANAPA (Parque Nacional Kilimanjaro) te acompaña y asiste durante cada jornada."
+    },
+    {
+      title: "Alojamiento en cabañas:",
+      desc: "Pernocte en los refugios oficiales de montaña de la Ruta Marangu (cabañas de Mandara, Horombo y Kibo) con camas y colchones."
+    },
+    {
+      title: "Tickets de ingreso:",
+      desc: "Todas las tarifas, tasas de entrada, acampada y conservación del Parque Nacional Kilimanjaro."
+    },
+    {
+      title: "Salarios justos del equipo:",
+      desc: "Cobertura de salarios dignos para guías, cocineros profesionales y porteadores dedicados."
+    },
+    {
+      title: "Comidas completas:",
+      desc: "Pensión completa con desayuno, almuerzo y cena calientes, así como bebidas calientes y viandas de marcha en la montaña."
+    },
+    {
+      title: "Agua tratada y lavado:",
+      desc: "De 3 a 4 litros de agua tratada provistos diariamente por escalador y agua caliente para lavado personal."
+    },
+    {
+      title: "Seguridad y rescate:",
+      desc: "Tasa de rescate obligatoria en montaña (Kilimanjaro Rescue Fee), equipo portátil complementario de oxígeno, oxímetro de pulso, primeros auxilios y servicios de evacuación de rescate terrestre del Parque Kilimanjaro."
+    },
+    {
+      title: "Certificado de cumbre:",
+      desc: "Certificado oficial del Parque Nacional del Kilimanjaro por tu exitoso intento de cumbre."
+    },
+    {
+      title: "Coordinación y liderazgo:",
+      desc: "Coordinación integral y asesoramiento de Ricardo Birn con seguimiento continuo a la distancia y acompañamiento en destino del guía de Birn Experience junto a los guías locales."
+    },
+    {
+      title: "Asistencia médica integral:",
+      desc: "Seguro de asistencia médica integral en viaje y en actividades de montaña durante toda la expedición."
+    }
+  ];
+
+  const safariItems = [
+    {
+      title: "Safaris completos:",
+      desc: "Observación de vida silvestre en los Parques Nacionales Tarangire y Cráter de Ngorongoro en el circuito norte."
+    },
+    {
+      title: "Vehículo privado 4x4:",
+      desc: "Todoterreno exclusivo con escotilla de techo abatible para fotos y vistas panorámicas a 360 grados."
+    },
+    {
+      title: "Guía de safari en español:",
+      desc: "Conductor y guía experimentado que habla español para explicar el comportamiento animal y los ecosistemas."
+    },
+    {
+      title: "Aranceles de Parques:",
+      desc: "Todos los tickets de acceso y permisos de descenso al Cráter de Ngorongoro y Parque Nacional Tarangire."
+    },
+    {
+      title: "Hoteles en Arusha:",
+      desc: "2 noches de hotel en Arusha (la noche antes y después del safari) con desayuno incluido."
+    },
+    {
+      title: "Farm of Dreams Lodge:",
+      desc: "Alojamiento con desayuno, almuerzo y cena incluidos en Karatu en un confortable lodge de alta calidad."
+    },
+    {
+      title: "Almuerzos en safari:",
+      desc: "Comidas campestres y viandas de picnic durante todo el trayecto de exploración."
+    },
+    {
+      title: "Agua potable:",
+      desc: "Provisión de agua mineral embotellada para todo el recorrido del safari."
+    },
+    {
+      title: "Visita cultural a comunidad Masai:",
+      desc: "Convivencia respetuosa e intercambio cultural en el poblado tradicional Masai."
+    },
+    {
+      title: "Regreso al aeropuerto:",
+      desc: "Traslado final en vehículo privado al Aeropuerto Internacional de Kilimanjaro (JRO)."
+    }
+  ];
+
+  const noIncluyeItems = [
+    {
+      title: "Tarifas aéreas internacionales:",
+      desc: "Vuelos internacionales hacia y desde el Aeropuerto de Kilimanjaro (JRO) y retorno."
+    },
+    {
+      title: "Visa de Tanzania:",
+      desc: "US$ 50 por persona a su llegada al aeropuerto o mediante trámite de e-visa digital."
+    },
+    {
+      title: "Seguro de viaje:",
+      desc: "Seguro de cancelación personal o coberturas complementarias opcionales."
+    },
+    {
+      title: "Artículos de carácter personal:",
+      desc: "Indumentaria técnica particular, saco de dormir de alta montaña, botas de trekking y elementos de aseo personal."
+    },
+    {
+      title: "Propinas para el equipo de montaña:",
+      desc: "Promedio sugerido de USD 200 por participante en total para guías, porteadores y cocineros (tradición arraigada en Tanzania)."
+    },
+    {
+      title: "Propinas para safari:",
+      desc: "USD 10 por día por cliente para el guía y conductor de safari."
+    },
+    {
+      title: "Snacks y medicina personal:",
+      desc: "Suplementos deportivos, barras energéticas, medicamentos particulares o gastos personales no contemplados."
+    },
+    {
+      title: "Cenas en Arusha:",
+      desc: "Cenas en las 2 noches de hotel en Arusha (desayuno sí está incluido) y bebidas fuera de las comidas provistas."
+    }
+  ];
+
   return (
-    <section id="inclusiones" className="py-24 sm:py-32 px-4 sm:px-6 lg:px-8 bg-[#01141c] relative scroll-mt-24">
+    <section id="inclusiones" className="py-24 sm:py-32 px-4 sm:px-6 lg:px-8 bg-[#01141c] relative border-t border-white/10 scroll-mt-24">
       <div id="servicios" className="max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-6">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 border border-[#009ea4]/40 bg-[#009ea4]/10 text-[#009ea4] font-title text-[12px] sm:text-xs font-black tracking-[3px] px-5 py-1.5 rounded-full uppercase mb-4">
             ✦ TRANSPARENCIA TOTAL ✦
           </div>
@@ -2039,69 +2709,96 @@ const Inclusiones: React.FC = () => {
               tu Viaje?
             </span>
           </h2>
+          <div className="flex items-center justify-center gap-4 my-6">
+            <div className="h-px w-24 bg-gradient-to-r from-transparent to-[#d45e33]" />
+            <span className="text-[#d45e33] text-[0.6rem]">◆</span>
+            <div className="h-px w-24 bg-gradient-to-l from-transparent to-[#d45e33]" />
+          </div>
+          <p className="max-w-2xl mx-auto text-sm sm:text-base text-[#95cecf] font-light leading-relaxed">
+            Te presentamos el desglose completo de todo lo que incluimos para que viajes con absoluta tranquilidad y sin sorpresas.
+          </p>
         </div>
 
-        <div className="flex items-center justify-center gap-4 mb-16">
-          <div className="h-px w-24 bg-gradient-to-r from-transparent to-[#d45e33]" />
-          <span className="text-[#d45e33] text-[0.6rem]">◆</span>
-          <div className="h-px w-24 bg-gradient-to-l from-transparent to-[#d45e33]" />
+        {/* Tabs Controls */}
+        <div className="flex justify-center gap-2.5 sm:gap-4 mb-10 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setActiveTab('kili')}
+            className={`px-5 sm:px-7 py-3 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+              activeTab === 'kili'
+                ? 'bg-[#009ea4] border border-[#009ea4] text-white shadow-lg shadow-[#009ea4]/35 scale-[1.02]'
+                : 'bg-[#01141c]/80 border border-white/15 text-[#f5f0e8]/85 hover:text-white hover:border-white/30'
+            }`}
+          >
+            1. Ascenso al Kilimanjaro
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('safari')}
+            className={`px-5 sm:px-7 py-3 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+              activeTab === 'safari'
+                ? 'bg-[#009ea4] border border-[#009ea4] text-white shadow-lg shadow-[#009ea4]/35 scale-[1.02]'
+                : 'bg-[#01141c]/80 border border-white/15 text-[#f5f0e8]/85 hover:text-white hover:border-white/30'
+            }`}
+          >
+            2. Safari en Tanzania
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('noincluye')}
+            className={`px-5 sm:px-7 py-3 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+              activeTab === 'noincluye'
+                ? 'bg-[#009ea4] border border-[#009ea4] text-white shadow-lg shadow-[#009ea4]/35 scale-[1.02]'
+                : 'bg-[#01141c]/80 border border-white/15 text-[#f5f0e8]/85 hover:text-white hover:border-white/30'
+            }`}
+          >
+            Servicios No Incluidos
+          </button>
         </div>
 
-        <div className="rounded-3xl border border-white/15 bg-[#02222d]/60 backdrop-blur-xl shadow-2xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
-            {/* Servicios Incluidos */}
-            <div className="p-8 sm:p-10 md:p-12 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/10">
-                  <div className="w-10 h-10 rounded-xl bg-[#009ea4]/20 text-[#009ea4] flex items-center justify-center font-black border border-[#009ea4]/40">
-                    <Check className="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider">
-                      Servicios Incluidos
-                    </h3>
-                  </div>
-                </div>
-
-                <ul className="space-y-4">
-                  {P.inclusions.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3.5 text-sm sm:text-base text-[#f5f0e8]/95 font-normal leading-relaxed">
-                      <div className="w-6 h-6 rounded-full bg-[#009ea4]/20 text-[#009ea4] flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                      </div>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+        {/* Tab Content: Kilimanjaro */}
+        {activeTab === 'kili' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 animate-fadeIn">
+            {/* Main Service Card */}
+            <div className="md:col-span-7 lg:col-span-8 bg-[#01141c]/80 border border-white/12 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider">
+                  Incluido en el Ascenso al Kilimanjaro
+                </h3>
               </div>
+              <ul className="space-y-3.5">
+                {kiliItems.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm sm:text-base text-[#f5f0e8]/90 font-normal leading-relaxed">
+                    <span className="text-[#25d366] font-bold shrink-0 mt-0.5 text-base">✔</span>
+                    <span>
+                      <strong className="text-white font-bold">{item.title}</strong> {item.desc}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* No Incluido */}
-            <div className="p-8 sm:p-10 md:p-12 flex flex-col justify-between bg-black/10">
-              <div>
-                <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/10">
-                  <div className="w-10 h-10 rounded-xl bg-[#d45e33]/20 text-[#d45e33] flex items-center justify-center font-black border border-[#d45e33]/40">
-                    <X className="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider">
-                      No Incluido
-                    </h3>
-                  </div>
-                </div>
-
-                <ul className="space-y-4">
-                  {P.exclusions.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3.5 text-sm sm:text-base text-[#f5f0e8]/80 font-normal leading-relaxed">
-                      <div className="w-6 h-6 rounded-full bg-[#d45e33]/20 text-[#d45e33] flex items-center justify-center shrink-0 mt-0.5">
-                        <X className="w-3.5 h-3.5 stroke-[3]" />
-                      </div>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-[#95cecf] mt-8 leading-relaxed">
+            {/* Side Card: Nuestro Criterio */}
+            <div className="md:col-span-5 lg:col-span-4 bg-[#01141c]/70 border border-white/12 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col justify-start">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-lg sm:text-xl text-white font-black uppercase tracking-wider">
+                  Nuestro Criterio
+                </h3>
+              </div>
+              <div className="text-xs sm:text-sm text-[#95cecf] leading-relaxed flex flex-col gap-5">
+                <p>
+                  <strong className="text-[#d45e33] font-bold block mb-1">Ruta Marangu:</strong>
+                  Elegimos esta ruta para brindarte cabañas de madera con luz solar y camas, evitando el desgaste de dormir sobre el suelo helado.
+                </p>
+                <p>
+                  <strong className="text-[#009ea4] font-bold block mb-1">Porteo Profesional:</strong>
+                  Los porteadores trasladan tu equipaje principal. Tú caminas ligero, únicamente con tu mochila de día con agua, abrigo y cámara.
+                </p>
+                <p>
+                  <strong className="text-[#95cecf] font-bold block mb-1">Acompañamiento Cercano:</strong>
+                  Cuidamos tus signos de oxigenación, tu hidratación y tu ritmo de paso en todo momento.
+                </p>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-[#f5f0e8]/80 mt-2 leading-relaxed">
                   <p>
                     *Sin cargos ocultos ni sorpresas en destino. Todas las tarifas del parque nacional, permisos oficiales y safaris están cubiertos en nuestra tarifa de USD 3.350.
                   </p>
@@ -2109,7 +2806,98 @@ const Inclusiones: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Tab Content: Safari */}
+        {activeTab === 'safari' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 animate-fadeIn">
+            {/* Main Service Card */}
+            <div className="md:col-span-7 lg:col-span-8 bg-[#01141c]/80 border border-white/12 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider">
+                  Incluido en el Safari en Tanzania
+                </h3>
+              </div>
+              <ul className="space-y-3.5">
+                {safariItems.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm sm:text-base text-[#f5f0e8]/90 font-normal leading-relaxed">
+                    <span className="text-[#25d366] font-bold shrink-0 mt-0.5 text-base">✔</span>
+                    <span>
+                      <strong className="text-white font-bold">{item.title}</strong> {item.desc}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Side Card: Hospedajes de Safari */}
+            <div className="md:col-span-5 lg:col-span-4 bg-[#01141c]/70 border border-white/12 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col justify-start">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-lg sm:text-xl text-white font-black uppercase tracking-wider">
+                  Hospedajes de Safari
+                </h3>
+              </div>
+              <div className="text-xs sm:text-sm text-[#95cecf] leading-relaxed flex flex-col gap-5">
+                <p>
+                  <strong className="text-[#d45e33] font-bold block mb-1">Farm of Dreams Lodge:</strong>
+                  Te alojas en un acogedor lodge entre las colinas de Karatu, con piscina y pensión completa.
+                </p>
+                <p>
+                  <strong className="text-[#009ea4] font-bold block mb-1">Green Mountain Hotel:</strong>
+                  Hotel en Arusha ideal para descansar y celebrar el regreso de la montaña antes de los safaris.
+                </p>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-[#f5f0e8]/80 mt-2 leading-relaxed">
+                  <p>
+                    *Sin cargos ocultos ni sorpresas en destino. Todas las tarifas del parque nacional, permisos oficiales y safaris están cubiertos en nuestra tarifa de USD 3.350.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Content: No Incluido */}
+        {activeTab === 'noincluye' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 animate-fadeIn">
+            {/* Main Service Card */}
+            <div className="md:col-span-7 lg:col-span-8 bg-[#01141c]/80 border border-white/12 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-xl sm:text-2xl text-white font-black uppercase tracking-wider">
+                  Servicios No Incluidos
+                </h3>
+              </div>
+              <ul className="space-y-3.5">
+                {noIncluyeItems.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm sm:text-base text-[#f5f0e8]/80 font-normal leading-relaxed">
+                    <span className="text-[#e55353] font-bold shrink-0 mt-0.5 text-base">✖</span>
+                    <span>
+                      <strong className="text-white font-bold">{item.title}</strong> {item.desc}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Side Card: Acompañamiento en Propinas */}
+            <div className="md:col-span-5 lg:col-span-4 bg-[#01141c]/70 border border-white/12 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col justify-start">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <h3 className="font-title text-lg sm:text-xl text-white font-black uppercase tracking-wider">
+                  Acompañamiento en Propinas
+                </h3>
+              </div>
+              <div className="text-xs sm:text-sm text-[#95cecf] leading-relaxed flex flex-col gap-4">
+                <p>
+                  Las propinas en Tanzania son una tradición de gratitud hacia el equipo local de porteadores y cocineros que hacen posible la travesía. En nuestra charla técnica en Moshi te asesoramos para organizar el fondo común de manera transparente y justa para todos.
+                </p>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-[#f5f0e8]/80 mt-4 leading-relaxed">
+                  <p>
+                    *Sin cargos ocultos ni sorpresas en destino. Todas las tarifas del parque nacional, permisos oficiales y safaris están cubiertos en nuestra tarifa de USD 3.350.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -2248,27 +3036,39 @@ const InstagramSection: React.FC = () => {
   const reels = [
     {
       id: "reel-1",
-      title: "Ruta Marangu en los Refugios",
-      tag: "Refugios Alpinos",
-      img: "/assets/images/horombo_hut.jpg",
-      views: "14.2K",
-      desc: "Viviendo la subida hacia Horombo Hut a 3.720m sobre el mar de nubes."
+      title: "Comienzo del Viaje al Kilimanjaro",
+      tag: "Comienzo del Viaje",
+      img: "/src/assets/images/regenerated_image_1792176058741.webp",
+      fallbackImg: "/assets/images/regenerated_image_1792176058741.webp",
+      alt: "Comienzo del Viaje al Kilimanjaro en Marangu Gate con Birn Experience",
+      views: "18.4K",
+      desc: "Nuestros primeros pasos en Tanzania y el inicio de la expedición hacia la montaña más alta de África.",
+      url: "https://www.instagram.com/p/DUuGddWEe9G/",
+      cta: "Abrir Posteo en Instagram"
     },
     {
       id: "reel-2",
-      title: "Amanecer en Uhuru Peak 5.895m",
-      tag: "Cumbre de África",
-      img: "/assets/images/uhuru_summit.jpg",
-      views: "28.5K",
-      desc: "El instante exacto en que los primeros rayos dorados tocan el cartel de cumbre."
+      title: "Momento de Cumbre de Todo el Grupo",
+      tag: "Momento de Cumbre",
+      img: "/src/assets/images/regenerated_image_1792176060316.webp",
+      fallbackImg: "/assets/images/regenerated_image_1792176060316.webp",
+      alt: "Momento de Cumbre de Todo el Grupo en Uhuru Peak (5.895 m) con Birn Experience",
+      views: "34.1K",
+      desc: "La emoción de todo el grupo al alcanzar juntos la cima del Kilimanjaro en Uhuru Peak (5.895 m).",
+      url: "https://www.instagram.com/p/DU5gMFujhm3/",
+      cta: "Abrir Reel en Instagram"
     },
     {
       id: "reel-3",
-      title: "Gran Manada de Elefantes en Tarangire",
-      tag: "Safari Salvaje",
-      img: "/assets/images/tarangire_safari.jpg",
-      views: "19.8K",
-      desc: "Encuentro cercano entre baobabs milenarios durante nuestro safari 4x4."
+      title: "Safari Salvaje en Tarangire & Ngorongoro",
+      tag: "Safari en el Viaje",
+      img: "/src/assets/images/regenerated_image_1792176061518.webp",
+      fallbackImg: "/assets/images/regenerated_image_1792176061518.webp",
+      alt: "Safari Salvaje 4x4 en Tarangire & Cráter Ngorongoro con Birn Experience",
+      views: "22.6K",
+      desc: "Viviendo la experiencia inolvidable del safari 4x4 entre baobabs, elefantes y fauna africana.",
+      url: "https://www.instagram.com/p/DWAFT_4kchU/",
+      cta: "Abrir Reel en Instagram"
     }
   ];
 
@@ -2291,7 +3091,7 @@ const InstagramSection: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Featured Story */}
           <a
-            href={P.contact.instagram}
+            href={P.contact.instagramHighlight}
             target="_blank"
             rel="noopener noreferrer"
             className="group relative rounded-3xl overflow-hidden border-2 border-[#d45e33] p-1 bg-gradient-to-b from-[#d45e33] to-[#009ea4] shadow-xl hover:scale-[1.02] transition-transform flex flex-col justify-between"
@@ -2322,13 +3122,34 @@ const InstagramSection: React.FC = () => {
           {reels.map((reel) => (
             <a
               key={reel.id}
-              href={P.contact.instagram}
+              href={reel.url}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`${reel.title} - ${reel.tag}`}
               className="group relative rounded-3xl overflow-hidden border border-white/15 bg-[#01141c]/90 shadow-xl hover:border-[#009ea4] transition-all hover:-translate-y-1 flex flex-col justify-between h-[360px]"
             >
-              <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('${reel.img}')` }} />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#01141c] via-[#01141c]/40 to-transparent" />
+              {/* Media image container with <img> and referrerPolicy */}
+              <div className="absolute inset-0 overflow-hidden">
+                <img
+                  src={reel.img}
+                  alt={reel.alt}
+                  title={reel.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== window.location.origin + reel.fallbackImg) {
+                      target.src = reel.fallbackImg;
+                    }
+                  }}
+                />
+              </div>
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[#01141c] via-[#01141c]/40 to-transparent pointer-events-none"
+                data-image={reel.img}
+                data-title={reel.title}
+                data-alt={reel.alt}
+              />
 
               {/* Reel Header */}
               <div className="relative z-10 p-4 flex items-center justify-between">
@@ -2343,15 +3164,12 @@ const InstagramSection: React.FC = () => {
 
               {/* Reel Footer info */}
               <div className="relative z-10 p-4 space-y-1">
-                <h4 className="font-title text-sm sm:text-base text-white font-bold leading-tight line-clamp-2">
-                  {reel.title}
-                </h4>
                 <p className="text-xs text-[#95cecf] line-clamp-2 leading-relaxed font-light">
                   {reel.desc}
                 </p>
                 <div className="pt-2 flex items-center gap-1 text-[11px] text-[#e4a381] font-semibold">
                   <ExternalLink className="w-3 h-3" />
-                  <span>Abrir Reel en Instagram</span>
+                  <span>{reel.cta}</span>
                 </div>
               </div>
             </a>
@@ -2473,11 +3291,17 @@ const PreparacionFAQ: React.FC = () => {
                         <ChevronDown className="w-4 h-4" />
                       </div>
                     </button>
-                    {isOpen && (
-                      <div className="px-5 pb-6 sm:px-6 pt-0 text-sm sm:text-base text-[#95cecf] font-light leading-relaxed border-t border-white/5 animate-in fade-in duration-200">
-                        <p>{faq.a}</p>
+                    <div
+                      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                        isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="px-5 pb-6 sm:px-6 pt-2 text-sm sm:text-base text-[#95cecf] font-light leading-relaxed border-t border-white/5">
+                          <p>{faq.a}</p>
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -2502,7 +3326,11 @@ const Footer: React.FC = () => {
             5 AL 15 DE FEBRERO 2027 · GRUPOS REDUCIDOS
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-black uppercase tracking-tight mb-4">
-            <span className="hidden sm:inline">¿Listo para coronar el Techo de África?</span>
+            <span className="hidden sm:inline">
+              ¿LISTO PARA CORONAR
+              <br />
+              EL TECHO DE ÁFRICA?
+            </span>
             <span className="inline sm:hidden">
               ¿Listo para
               <br />
@@ -2564,7 +3392,7 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <p className="text-sm sm:text-base text-[#9fb1b8] leading-relaxed max-w-sm font-light">
-              Nosotros creamos experiencias de montaña auténticas, seguras y humanas en los escenarios naturales más sobrecogedores del mundo, bajo el liderazgo de Ricardo Birn.
+              Nosotros creamos experiencias de montaña auténticas, seguras y humanas en los escenarios naturales más sobrecogedores del mundo, bajo la coordinación de Ricardo Birn y nuestro equipo de guías.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
@@ -2768,7 +3596,7 @@ export default function App() {
         <ExpeditionMapSection onSelectDay={handleSelectDay} />
 
         {/* Altitude Profile */}
-        <AltitudeProfileSection onSelectDay={handleSelectDay} />
+        <AltitudeProfileSection />
 
         {/* Day-by-Day Itinerary Carousel */}
         <Itinerario selectedDayNumber={selectedDayNumber} />

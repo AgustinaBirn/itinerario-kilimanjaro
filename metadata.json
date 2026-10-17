@@ -4,5 +4,40 @@
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "mediaMetadata": [
+    {
+      "id": "reel-1-comienzo-viaje",
+      "target": "Elemento 1 - Comienzo del Viaje al Kilimanjaro",
+      "url": "https://www.instagram.com/p/DUuGddWEe9G/",
+      "image": "/assets/images/regenerated_image_1792176058741.webp",
+      "imageTimestamped": "/src/assets/images/regenerated_image_1792176058741.webp",
+      "alt": "Comienzo del Viaje al Kilimanjaro en Marangu Gate con Birn Experience",
+      "title": "Comienzo del Viaje al Kilimanjaro",
+      "type": "Instagram Post",
+      "tag": "Comienzo del Viaje"
+    },
+    {
+      "id": "reel-2-cumbre-kilimanjaro",
+      "target": "Elemento 2 - Momento de Cumbre de Todo el Grupo",
+      "url": "https://www.instagram.com/p/DU5gMFujhm3/",
+      "image": "/assets/images/regenerated_image_1792176060316.webp",
+      "imageTimestamped": "/src/assets/images/regenerated_image_1792176060316.webp",
+      "alt": "Momento de Cumbre de Todo el Grupo en Uhuru Peak (5.895 m) con Birn Experience",
+      "title": "Momento de Cumbre de Todo el Grupo",
+      "type": "Instagram Reel",
+      "tag": "Momento de Cumbre"
+    },
+    {
+      "id": "reel-3-safari-tanzania",
+      "target": "Elemento 3 - Safari Hecho en el Viaje",
+      "url": "https://www.instagram.com/p/DWAFT_4kchU/",
+      "image": "/assets/images/regenerated_image_1792176061518.webp",
+      "imageTimestamped": "/src/assets/images/regenerated_image_1792176061518.webp",
+      "alt": "Safari Salvaje 4x4 en Tarangire & Ngorongoro con Birn Experience",
+      "title": "Safari Salvaje en Tarangire & Ngorongoro",
+      "type": "Instagram Reel",
+      "tag": "Safari en el Viaje"
+    }
   ]
 }
