@@ -48,7 +48,7 @@ function WhatsAppIcon({ className = "w-4 h-4" }: { className?: string }) {
 const P = {
   title: "TREKKING AL KILIMANJARO & SAFARI EN TANZANIA",
   destination: "Tanzania, África Oriental",
-  dates: "5 al 15 de Febrero de 2027",
+  dates: "15 al 25 de Septiembre de 2027",
   duration: "11 Días",
   officialPriceUSD: "3.350",
   contact: {
@@ -61,7 +61,7 @@ const P = {
     facebook: "https://www.facebook.com/birnexperience/"
   },
   stats: [
-    { num: "11", unit: "DÍAS", label: "Experiencia integral", sub: "5 al 15 de Febrero 2027", accent: "#d45e33" },
+    { num: "11", unit: "DÍAS", label: "Experiencia integral", sub: "15 al 25 de Septiembre 2027", accent: "#d45e33" },
     { num: "10", unit: "NOCHES", label: "Refugios & Lodges", sub: "Ruta Marangu & Safari", accent: "#009ea4" },
     { num: "5.895", unit: "M", label: "Punto más alto", sub: "Uhuru Peak · Cima de África", accent: "#d45e33" },
     { num: "3.350", unit: "USD", label: "TARIFA OFICIAL", sub: "Por persona en base doble", accent: "#d45e33" }
@@ -69,7 +69,7 @@ const P = {
   itinerary: [
     {
       day: 1,
-      date: "05 DE FEBRERO",
+      date: "15 DE SEPTIEMBRE",
       title: "Llegada al Aeropuerto de Kilimanjaro (JRO) → Moshi",
       subtitle: "Bienvenida en Moshi, traslado y briefing",
       stage: "llegada",
@@ -87,7 +87,7 @@ const P = {
     },
     {
       day: 2,
-      date: "06 DE FEBRERO",
+      date: "16 DE SEPTIEMBRE",
       title: "Puerta de Marangu (1.870 m) → Mandara Hut (2.720 m)",
       subtitle: "Ingreso al Parque y marcha en selva tropical",
       stage: "marangu",
@@ -105,7 +105,7 @@ const P = {
     },
     {
       day: 3,
-      date: "07 DE FEBRERO",
+      date: "17 DE SEPTIEMBRE",
       title: "Mandara Hut (2.720 m) → Horombo Hut (3.720 m)",
       subtitle: "Páramo alpino con vistas a Mawenzi y Kibo",
       stage: "marangu",
@@ -123,7 +123,7 @@ const P = {
     },
     {
       day: 4,
-      date: "08 DE FEBRERO",
+      date: "18 DE SEPTIEMBRE",
       title: "Jornada de Aclimatación en Horombo Hut (3.720 m) → Zebra Rocks",
       subtitle: "Aclimatación activa en Zebra Rocks (4.020 m)",
       stage: "marangu",
@@ -141,7 +141,7 @@ const P = {
     },
     {
       day: 5,
-      date: "09 DE FEBRERO",
+      date: "19 DE SEPTIEMBRE",
       title: "Horombo Hut (3.720 m) → Kibo Hut (4.703 m)",
       subtitle: "Cruce del desierto alpino a Kibo Hut",
       stage: "marangu",
@@ -159,7 +159,7 @@ const P = {
     },
     {
       day: 6,
-      date: "10 DE FEBRERO",
+      date: "20 DE SEPTIEMBRE",
       title: "Ataque a Cumbre: Kibo Hut → Uhuru Peak (5.895 m) → Horombo Hut",
       subtitle: "Amanecer en Uhuru Peak (5.895 m) y descenso",
       stage: "cumbre",
@@ -178,7 +178,7 @@ const P = {
     },
     {
       day: 7,
-      date: "11 DE FEBRERO",
+      date: "21 DE SEPTIEMBRE",
       title: "Horombo Hut (3.720 m) → Puerta de Marangu → Moshi / Arusha",
       subtitle: "Descenso final, certificados y descanso",
       stage: "marangu",
@@ -196,7 +196,7 @@ const P = {
     },
     {
       day: 8,
-      date: "12 DE FEBRERO",
+      date: "22 DE SEPTIEMBRE",
       title: "Safari en el Parque Nacional Tarangire",
       subtitle: "Parque Tarangire, baobabs y elefantes",
       stage: "safari",
@@ -214,7 +214,7 @@ const P = {
     },
     {
       day: 9,
-      date: "13 DE FEBRERO",
+      date: "23 DE SEPTIEMBRE",
       title: "Safari en la Gran Caldera del Cráter Ngorongoro",
       subtitle: "Cráter Ngorongoro y los 'Cinco Grandes'",
       stage: "safari",
@@ -232,7 +232,7 @@ const P = {
     },
     {
       day: 10,
-      date: "14 DE FEBRERO",
+      date: "24 DE SEPTIEMBRE",
       title: "Inmersión Cultural Masai y Retorno a Arusha",
       subtitle: "Cultura ancestral Masai y mercados locales",
       stage: "cultura",
@@ -250,7 +250,7 @@ const P = {
     },
     {
       day: 11,
-      date: "15 DE FEBRERO",
+      date: "25 DE SEPTIEMBRE",
       title: "Traslado al Aeropuerto Internacional JRO · Retorno",
       subtitle: "Despedida de Tanzania y vuelo de retorno",
       stage: "regreso",
@@ -596,7 +596,7 @@ const Hero: React.FC<{ onScrollToItinerary: () => void }> = ({ onScrollToItinera
         <div className="flex flex-col items-center justify-center mb-5 sm:mb-6">
           <div className="inline-flex items-center gap-2.5 text-[#e4a381] font-title text-xs sm:text-sm font-bold tracking-[3px] uppercase">
             <Mountain className="w-4 h-4 text-[#d45e33]" />
-            <span>TANZANIA · FEBRERO 2027</span>
+            <span>TANZANIA · SEPTIEMBRE 2027</span>
           </div>
           <div className="flex items-center justify-center gap-3 mt-2.5">
             <div className="h-px w-20 sm:w-28 bg-gradient-to-r from-transparent to-[#d45e33]" />
@@ -636,7 +636,7 @@ const Hero: React.FC<{ onScrollToItinerary: () => void }> = ({ onScrollToItinera
           <button
             onClick={() => {
               window.open(
-                `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience%2C%20deseo%20reservar%20mi%20lugar%20para%20el%20viaje%20de%20Trekking%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(5%20al%2015%20de%20Febrero%20de%202027%20-%20Tarifa%20oficial%20USD%203.350).`,
+                `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience%2C%20deseo%20reservar%20mi%20lugar%20para%20el%20viaje%20de%20Trekking%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(15%20al%2025%20de%20Septiembre%20de%202027%20-%20Tarifa%20oficial%20USD%203.350).`,
                 '_blank',
                 'noopener,noreferrer'
               );
@@ -659,9 +659,9 @@ const Hero: React.FC<{ onScrollToItinerary: () => void }> = ({ onScrollToItinera
         {/* Bottom Banner Strip */}
         <div className="w-full border-t border-[#d45e33]/30 pt-5 sm:pt-6 mt-1 sm:mt-2">
           <div className="font-title text-sm sm:text-base md:text-lg text-[#e4a381] tracking-[2px] uppercase flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 font-bold text-center">
-            <span className="hidden sm:inline">✦ DEL 5 AL 15 DE FEBRERO 2027</span>
+            <span className="hidden sm:inline">✦ DEL 15 AL 25 DE SEPTIEMBRE 2027</span>
             <span className="inline sm:hidden text-center leading-tight">
-              ✦ 5 AL 15 DE FEBRERO 2027
+              ✦ 15 AL 25 DE SEPTIEMBRE 2027
             </span>
             <span className="hidden sm:inline text-[#009ea4]">·</span>
             <span className="text-[#d45e33] font-black">USD 3.350 POR PERSONA ✦</span>
@@ -719,8 +719,8 @@ const Cifras: React.FC = () => {
                   <p className="text-xs sm:text-sm text-[#95cecf] font-normal leading-tight">
                     {idx === 0 ? (
                       <>
-                        <span className="sm:hidden">5 al 15<br />de Febrero 2027</span>
-                        <span className="hidden sm:inline">5 al 15 de Febrero 2027</span>
+                        <span className="sm:hidden">15 al 25<br />de Septiembre 2027</span>
+                        <span className="hidden sm:inline">15 al 25 de Septiembre 2027</span>
                       </>
                     ) : idx === 1 ? (
                       <>
@@ -771,7 +771,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "jro-moshi-d1",
     name: "Aeropuerto JRO → Moshi Base",
     dayNumber: 1,
-    dayLabel: "Día 1 · 05 Febrero",
+    dayLabel: "Día 1 · 15 Septiembre",
     stage: "Llegada y Traslado a Moshi",
     zone: "marangu",
     altitude: "890 m",
@@ -784,7 +784,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "marangu-mandara-d2",
     name: "Puerta de Marangu → Mandara Hut",
     dayNumber: 2,
-    dayLabel: "Día 2 · 06 Febrero",
+    dayLabel: "Día 2 · 16 Septiembre",
     stage: "Selva Tropical y Comienzo del Trek",
     zone: "marangu",
     altitude: "2.720 m",
@@ -797,7 +797,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "mandara-horombo-d3",
     name: "Mandara Hut → Horombo Hut",
     dayNumber: 3,
-    dayLabel: "Día 3 · 07 Febrero",
+    dayLabel: "Día 3 · 17 Septiembre",
     stage: "Páramo Alpino y Vistas a Kibo",
     zone: "marangu",
     altitude: "3.720 m",
@@ -810,7 +810,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "zebra-rocks-d4",
     name: "Aclimatación en Horombo · Zebra Rocks",
     dayNumber: 4,
-    dayLabel: "Día 4 · 08 Febrero",
+    dayLabel: "Día 4 · 18 Septiembre",
     stage: "Jornada Clave de Aclimatación Activa",
     zone: "marangu",
     altitude: "4.020 m",
@@ -823,7 +823,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "horombo-kibo-d5",
     name: "Horombo Hut → The Saddle → Kibo Hut",
     dayNumber: 5,
-    dayLabel: "Día 5 · 09 Febrero",
+    dayLabel: "Día 5 · 19 Septiembre",
     stage: "Desierto Volcánico y Refugio Base",
     zone: "marangu",
     altitude: "4.703 m",
@@ -836,7 +836,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "uhuru-peak-summit-d6",
     name: "Uhuru Peak (Cima de África) · 5.895 m",
     dayNumber: 6,
-    dayLabel: "Día 6 · 10 Febrero",
+    dayLabel: "Día 6 · 20 Septiembre",
     stage: "Cumbre Uhuru Peak · Techo de África",
     zone: "cumbre",
     altitude: "5.895 m",
@@ -849,7 +849,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "descenso-marangu-d7",
     name: "Descenso a Marangu Gate → Moshi",
     dayNumber: 7,
-    dayLabel: "Día 7 · 11 Febrero",
+    dayLabel: "Día 7 · 21 Septiembre",
     stage: "Descenso Final y Certificados Oficiales",
     zone: "marangu",
     altitude: "1.870 m",
@@ -862,7 +862,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "tarangire-safari-d8",
     name: "Parque Nacional Tarangire",
     dayNumber: 8,
-    dayLabel: "Día 8 · 12 Febrero",
+    dayLabel: "Día 8 · 22 Septiembre",
     stage: "Safari en 4x4 entre Baobabs y Elefantes",
     zone: "safari",
     altitude: "1.100 m",
@@ -875,7 +875,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "ngorongoro-crater-d9",
     name: "Gran Cráter del Ngorongoro",
     dayNumber: 9,
-    dayLabel: "Día 9 · 13 Febrero",
+    dayLabel: "Día 9 · 23 Septiembre",
     stage: "Caldera Volcánica y los Cinco Grandes",
     zone: "safari",
     altitude: "1.700 m",
@@ -888,7 +888,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "aldea-masai-arusha-d10",
     name: "Comunidad Masai y Mercado de Arusha",
     dayNumber: 10,
-    dayLabel: "Día 10 · 14 Febrero",
+    dayLabel: "Día 10 · 24 Septiembre",
     stage: "Inmersión Cultural y Tradición Masai",
     zone: "safari",
     altitude: "1.400 m",
@@ -901,7 +901,7 @@ const expeditionWaypoints: ExpeditionWaypoint[] = [
     id: "retorno-jro-d11",
     name: "Arusha → Aeropuerto Kilimanjaro (JRO)",
     dayNumber: 11,
-    dayLabel: "Día 11 · 15 Febrero",
+    dayLabel: "Día 11 · 25 Septiembre",
     stage: "Traslado Privado y Vuelo Internacional",
     zone: "safari",
     altitude: "890 m",
@@ -2929,12 +2929,12 @@ const Precio: React.FC = () => {
           </div>
           <p className="text-sm sm:text-base text-[#95cecf] font-medium tracking-wider mt-3 uppercase text-balance">
             <span className="hidden sm:inline">
-              Tarifa oficial por persona en base doble · Cupos reducidos · 5 al 15 de Febrero de 2027
+              Tarifa oficial por persona en base doble · Cupos reducidos · 15 al 25 de Septiembre de 2027
             </span>
             <span className="inline sm:hidden">
               Tarifa oficial por persona en base doble ·
               <br />
-              Cupos reducidos · 5 al 15 de Febrero de 2027
+              Cupos reducidos · 15 al 25 de Septiembre de 2027
             </span>
           </p>
         </div>
@@ -2943,7 +2943,7 @@ const Precio: React.FC = () => {
           <button
             onClick={() => {
               window.open(
-                `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience%2C%20deseo%20reservar%20mi%20lugar%20para%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(5%20al%2015%20de%20Febrero%20de%202027%20-%20Tarifa%20oficial%3A%20USD%203.350).`,
+                `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience%2C%20deseo%20reservar%20mi%20lugar%20para%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(15%20al%2025%20de%20Septiembre%20de%202027%20-%20Tarifa%20oficial%3A%20USD%203.350).`,
                 '_blank',
                 'noopener,noreferrer'
               );
@@ -3323,7 +3323,7 @@ const Footer: React.FC = () => {
       <div className="border-b border-white/10 py-16 px-4 sm:px-6 lg:px-8 text-center bg-gradient-to-b from-[#022c3b]/60 to-transparent">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <span className="micro-label !text-[12px] sm:!text-[0.725rem] mb-2 block">
-            5 AL 15 DE FEBRERO 2027 · GRUPOS REDUCIDOS
+            15 AL 25 DE SEPTIEMBRE 2027 · GRUPOS REDUCIDOS
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white font-black uppercase tracking-tight mb-4">
             <span className="hidden sm:inline">
@@ -3353,7 +3353,7 @@ const Footer: React.FC = () => {
             <button
               onClick={() => {
                 window.open(
-                  `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience!%20Deseo%20consultar%20informaci%C3%B3n%20sobre%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(5%20al%2015%20de%20Febrero%20de%202027).`,
+                  `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience!%20Deseo%20consultar%20informaci%C3%B3n%20sobre%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(15%20al%2025%20de%20Septiembre%20de%202027).`,
                   '_blank',
                   'noopener,noreferrer'
                 );
@@ -3550,7 +3550,7 @@ const FloatingActions: React.FC = () => {
       <button
         onClick={() => {
           window.open(
-            `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience!%20Quiero%20consultar%20disponibilidad%20y%20ficha%20t%C3%A9cnica%20para%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(5%20al%2015%20de%20Febrero%20de%202027).`,
+            `https://wa.me/${P.contact.whatsappNumber}?text=Hola%20Birn%20Experience!%20Quiero%20consultar%20disponibilidad%20y%20ficha%20t%C3%A9cnica%20para%20la%20expedici%C3%B3n%20al%20Kilimanjaro%20de%2011%20d%C3%ADas%20(15%20al%2025%20de%20Septiembre%20de%202027).`,
             '_blank',
             'noopener,noreferrer'
           );
